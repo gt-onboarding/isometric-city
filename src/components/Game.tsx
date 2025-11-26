@@ -1045,7 +1045,7 @@ function AdvisorsPanel() {
   );
 }
 
-type OverlayMode = 'none' | 'power' | 'water';
+type OverlayMode = 'none' | 'power' | 'water' | 'fire' | 'police';
 
 // Image cache for building sprites
 const imageCache = new Map<string, HTMLImageElement>();
@@ -1235,7 +1235,7 @@ function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile }: {
   }, [spawnRandomCar]);
 
   const drawCars = useCallback((ctx: CanvasRenderingContext2D) => {
-    const { offset: currentOffset, zoom: currentZoom } = worldStateRef.current;
+    const { offset: currentOffset, zoom: currentZoom, grid: currentGrid, gridSize: currentGridSize } = worldStateRef.current;
     const canvas = ctx.canvas;
     const dpr = window.devicePixelRatio || 1;
     
@@ -1253,6 +1253,48 @@ function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile }: {
     const viewRight = viewWidth - currentOffset.x / currentZoom + TILE_WIDTH;
     const viewBottom = viewHeight - currentOffset.y / currentZoom + TILE_HEIGHT * 2;
     
+    // Helper function to check if a car is behind a building
+    const isCarBehindBuilding = (carTileX: number, carTileY: number): boolean => {
+      const carDepth = carTileX + carTileY;
+      
+      // Check nearby tiles for buildings that would be drawn in front
+      // We check a 3x3 area around the car to catch buildings that might visually cover it
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const checkX = carTileX + dx;
+          const checkY = carTileY + dy;
+          
+          // Skip if out of bounds
+          if (checkX < 0 || checkY < 0 || checkX >= currentGridSize || checkY >= currentGridSize) {
+            continue;
+          }
+          
+          const tile = currentGrid[checkY][checkX];
+          const buildingType = tile.building.type;
+          
+          // Skip roads, grass, empty, water, and trees (these don't hide cars)
+          if (buildingType === 'road' || buildingType === 'grass' || buildingType === 'empty' || 
+              buildingType === 'water' || buildingType === 'tree') {
+            continue;
+          }
+          
+          // Check if this building tile has a higher or equal depth (drawn at same time or after)
+          const buildingDepth = checkX + checkY;
+          
+          // In isometric rendering, objects with higher depth are drawn later (on top)
+          // Also check same depth but drawn later in the rendering order (to the right/bottom)
+          if (buildingDepth > carDepth || 
+              (buildingDepth === carDepth && (checkX > carTileX || (checkX === carTileX && checkY > carTileY)))) {
+            // All buildings with sprites (non-road, non-grass, etc.) have PNG sprites that extend upward
+            // and can visually cover cars, so we hide the car
+            return true;
+          }
+        }
+      }
+      
+      return false;
+    };
+    
     carsRef.current.forEach(car => {
       const { screenX, screenY } = gridToScreen(car.tileX, car.tileY, 0, 0);
       const centerX = screenX + TILE_WIDTH / 2;
@@ -1262,6 +1304,11 @@ function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile }: {
       const carY = centerY + meta.vec.dy * car.progress + meta.normal.ny * car.laneOffset;
       
       if (carX < viewLeft - 40 || carX > viewRight + 40 || carY < viewTop - 60 || carY > viewBottom + 60) {
+        return;
+      }
+      
+      // Check if car is behind a building - if so, skip drawing
+      if (isCarBehindBuilding(car.tileX, car.tileY)) {
         return;
       }
       
@@ -1435,8 +1482,27 @@ function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile }: {
     
     // Draw overlays last so they remain visible on top of buildings
     overlayQueue.forEach(({ tile, screenX, screenY }) => {
-      const hasService = overlayMode === 'power' ? tile.building.powered : tile.building.watered;
-      ctx.fillStyle = hasService ? 'rgba(34, 197, 94, 0.4)' : 'rgba(239, 68, 68, 0.4)';
+      let fillStyle: string;
+      
+      if (overlayMode === 'power') {
+        fillStyle = tile.building.powered ? 'rgba(34, 197, 94, 0.4)' : 'rgba(239, 68, 68, 0.4)';
+      } else if (overlayMode === 'water') {
+        fillStyle = tile.building.watered ? 'rgba(34, 197, 94, 0.4)' : 'rgba(239, 68, 68, 0.4)';
+      } else if (overlayMode === 'fire') {
+        const coverage = state.services.fire[tile.y][tile.x];
+        // Red gradient: darker red = better coverage, lighter red = poor coverage
+        const intensity = coverage / 100;
+        fillStyle = `rgba(239, ${68 + Math.floor(intensity * 100)}, ${68 + Math.floor(intensity * 100)}, ${0.3 + intensity * 0.4})`;
+      } else if (overlayMode === 'police') {
+        const coverage = state.services.police[tile.y][tile.x];
+        // Blue gradient: darker blue = better coverage, lighter blue = poor coverage
+        const intensity = coverage / 100;
+        fillStyle = `rgba(${59 + Math.floor(intensity * 100)}, ${130 + Math.floor(intensity * 100)}, ${246 - Math.floor(intensity * 50)}, ${0.3 + intensity * 0.4})`;
+      } else {
+        fillStyle = 'rgba(128, 128, 128, 0.4)';
+      }
+      
+      ctx.fillStyle = fillStyle;
       ctx.beginPath();
       ctx.moveTo(screenX + TILE_WIDTH / 2, screenY);
       ctx.lineTo(screenX + TILE_WIDTH, screenY + TILE_HEIGHT / 2);
@@ -1447,7 +1513,7 @@ function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile }: {
     });
     
     ctx.restore();
-  }, [grid, gridSize, offset, zoom, hoveredTile, selectedTile, overlayMode, imagesLoaded, canvasSize, dragStartTile, dragEndTile]);
+  }, [grid, gridSize, offset, zoom, hoveredTile, selectedTile, overlayMode, imagesLoaded, canvasSize, dragStartTile, dragEndTile, state.services]);
   
   // Animate decorative car traffic on top of the base canvas
   useEffect(() => {
@@ -2112,6 +2178,26 @@ const OverlayModeToggle = React.memo(function OverlayModeToggle({
         >
           <WaterIcon size={14} />
         </Button>
+        
+        <Button
+          variant={overlayMode === 'fire' ? 'default' : 'ghost'}
+          size="sm"
+          onClick={() => setOverlayMode('fire')}
+          className={`h-8 px-3 ${overlayMode === 'fire' ? 'bg-red-500 hover:bg-red-600' : ''}`}
+          title="Fire Coverage"
+        >
+          <FireIcon size={14} />
+        </Button>
+        
+        <Button
+          variant={overlayMode === 'police' ? 'default' : 'ghost'}
+          size="sm"
+          onClick={() => setOverlayMode('police')}
+          className={`h-8 px-3 ${overlayMode === 'police' ? 'bg-blue-500 hover:bg-blue-600' : ''}`}
+          title="Police Coverage"
+        >
+          <SafetyIcon size={14} />
+        </Button>
       </div>
     </Card>
   );
@@ -2128,6 +2214,10 @@ export default function Game() {
       setOverlayMode('power');
     } else if (state.selectedTool === 'water_tower') {
       setOverlayMode('water');
+    } else if (state.selectedTool === 'fire_station') {
+      setOverlayMode('fire');
+    } else if (state.selectedTool === 'police_station') {
+      setOverlayMode('police');
     }
   }, [state.selectedTool]);
   
