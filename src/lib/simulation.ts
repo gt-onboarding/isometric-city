@@ -510,31 +510,38 @@ function hasRoadAccess(
   return false;
 }
 
-// Evolve buildings based on conditions
-function evolveBuilding(tile: Tile, services: ServiceCoverage, stats: Stats): Building {
-  const building = { ...tile.building };
-  const { zone } = tile;
-  
-  // Only evolve zoned tiles with buildings
+// Evolve buildings based on conditions, reserving footprints as density increases
+function evolveBuilding(grid: Tile[][], x: number, y: number, services: ServiceCoverage): Building {
+  const tile = grid[y][x];
+  const building = tile.building;
+  const zone = tile.zone;
+
+  // Only evolve zoned tiles with real buildings
   if (zone === 'none' || building.type === 'grass' || building.type === 'water' || building.type === 'road') {
     return building;
   }
 
-  // Check utility connections
-  building.powered = services.power[tile.y][tile.x];
-  building.watered = services.water[tile.y][tile.x];
+  // Placeholder tiles from multi-tile footprints stay inert but track utilities
+  if (building.type === 'empty') {
+    building.powered = services.power[y][x];
+    building.watered = services.water[y][x];
+    building.population = 0;
+    building.jobs = 0;
+    return building;
+  }
 
-  // Calculate growth potential
+  building.powered = services.power[y][x];
+  building.watered = services.water[y][x];
+
   const hasPower = building.powered;
   const hasWater = building.watered;
   const landValue = tile.landValue;
-  
-  // Don't grow without utilities
+
   if (!hasPower || !hasWater) {
     return building;
   }
 
-  building.age++;
+  building.age = (building.age || 0) + 1;
 
   // Determine target building based on zone and conditions
   const buildingList = zone === 'residential' ? RESIDENTIAL_BUILDINGS :
@@ -543,35 +550,55 @@ function evolveBuilding(tile: Tile, services: ServiceCoverage, stats: Stats): Bu
 
   // Calculate level based on land value and services
   const serviceCoverage = (
-    services.police[tile.y][tile.x] +
-    services.fire[tile.y][tile.x] +
-    services.health[tile.y][tile.x] +
-    services.education[tile.y][tile.x]
+    services.police[y][x] +
+    services.fire[y][x] +
+    services.health[y][x] +
+    services.education[y][x]
   ) / 4;
 
   const targetLevel = Math.min(5, Math.max(1, Math.floor(
-    (landValue / 25) + (serviceCoverage / 30) + (building.age / 100)
+    (landValue / 24) + (serviceCoverage / 28) + (building.age / 90)
   )));
 
-  // Upgrade building if conditions are met
-  if (building.age > 20 && targetLevel > building.level && Math.random() < 0.1) {
-    const newIndex = Math.min(buildingList.length - 1, targetLevel - 1);
-    building.type = buildingList[newIndex];
-    building.level = targetLevel;
+  const targetIndex = Math.min(buildingList.length - 1, targetLevel - 1);
+  const targetType = buildingList[targetIndex];
+  let anchorX = x;
+  let anchorY = y;
+
+  // Attempt to upgrade footprint/density when the tile is mature enough
+  if (building.age > 20 && (targetLevel > building.level || targetType !== building.type) && Math.random() < 0.12) {
+    const size = getBuildingSize(targetType);
+    const footprint = findFootprintIncludingTile(grid, x, y, size.width, size.height, zone, grid.length);
+
+    if (footprint) {
+      const anchor = applyBuildingFootprint(grid, footprint.originX, footprint.originY, targetType, zone, targetLevel, services);
+      anchor.level = targetLevel;
+      anchorX = footprint.originX;
+      anchorY = footprint.originY;
+    } else if (targetLevel > building.level) {
+      // If we can't merge lots, still allow incremental level gain
+      building.level = Math.min(targetLevel, building.level + 1);
+    }
   }
 
-  // Calculate population/jobs based on building type and level
-  const buildingStats = BUILDING_STATS[building.type];
-  const efficiency = (hasPower ? 0.5 : 0) + (hasWater ? 0.5 : 0);
-  
-  if (buildingStats.maxPop > 0) {
-    building.population = Math.floor(buildingStats.maxPop * building.level * efficiency * 0.8);
-  }
-  if (buildingStats.maxJobs > 0) {
-    building.jobs = Math.floor(buildingStats.maxJobs * building.level * efficiency * 0.8);
-  }
+  // Always refresh stats on the anchor tile
+  const anchorTile = grid[anchorY][anchorX];
+  const anchorBuilding = anchorTile.building;
+  anchorBuilding.powered = services.power[anchorY][anchorX];
+  anchorBuilding.watered = services.water[anchorY][anchorX];
+  anchorBuilding.level = Math.max(anchorBuilding.level, Math.min(targetLevel, anchorBuilding.level + 1));
 
-  return building;
+  const buildingStats = BUILDING_STATS[anchorBuilding.type];
+  const efficiency = (anchorBuilding.powered ? 0.5 : 0) + (anchorBuilding.watered ? 0.5 : 0);
+
+  anchorBuilding.population = buildingStats.maxPop > 0
+    ? Math.floor(buildingStats.maxPop * Math.max(1, anchorBuilding.level) * efficiency * 0.8)
+    : 0;
+  anchorBuilding.jobs = buildingStats.maxJobs > 0
+    ? Math.floor(buildingStats.maxJobs * Math.max(1, anchorBuilding.level) * efficiency * 0.8)
+    : 0;
+
+  return grid[y][x].building;
 }
 
 // Calculate city stats
@@ -603,13 +630,13 @@ function calculateStats(grid: Tile[][], size: number, budget: Budget, taxRate: n
 
       if (tile.zone === 'residential') {
         residentialZones++;
-        if (building.type !== 'grass') developedResidential++;
+        if (building.type !== 'grass' && building.type !== 'empty') developedResidential++;
       } else if (tile.zone === 'commercial') {
         commercialZones++;
-        if (building.type !== 'grass') developedCommercial++;
+        if (building.type !== 'grass' && building.type !== 'empty') developedCommercial++;
       } else if (tile.zone === 'industrial') {
         industrialZones++;
-        if (building.type !== 'grass') developedIndustrial++;
+        if (building.type !== 'grass' && building.type !== 'empty') developedIndustrial++;
       }
 
       if (building.type === 'tree') treeCount++;
@@ -939,13 +966,16 @@ export function simulateTick(state: GameState): GameState {
           // Spawn a new building
           const buildingList = tile.zone === 'residential' ? RESIDENTIAL_BUILDINGS :
             tile.zone === 'commercial' ? COMMERCIAL_BUILDINGS : INDUSTRIAL_BUILDINGS;
-          tile.building.type = buildingList[0];
-          tile.building.level = 1;
-          tile.building.age = 0;
+          const candidate = buildingList[0];
+          const candidateSize = getBuildingSize(candidate);
+          const footprint = findFootprintIncludingTile(newGrid, x, y, candidateSize.width, candidateSize.height, tile.zone, size);
+          if (footprint) {
+            applyBuildingFootprint(newGrid, footprint.originX, footprint.originY, candidate, tile.zone, 1, services);
+          }
         }
       } else if (tile.zone !== 'none' && tile.building.type !== 'grass') {
         // Evolve existing building
-        newGrid[y][x].building = evolveBuilding(tile, services, state.stats);
+        newGrid[y][x].building = evolveBuilding(newGrid, x, y, services);
       }
 
       // Update pollution from buildings
@@ -1076,10 +1106,16 @@ const BUILDING_SIZES: Partial<Record<BuildingType, { width: number; height: numb
   university: { width: 3, height: 2 },
   airport: { width: 4, height: 4 },
   space_program: { width: 3, height: 3 },
-  // Industrial buildings are all 2x2
+  mansion: { width: 2, height: 2 },
+  apartment_low: { width: 2, height: 2 },
+  apartment_high: { width: 2, height: 2 },
+  office_low: { width: 2, height: 2 },
+  office_high: { width: 2, height: 2 },
+  mall: { width: 3, height: 3 },
+  // Industrial buildings use multi-tile footprints
   factory_small: { width: 2, height: 2 },
   factory_medium: { width: 2, height: 2 },
-  factory_large: { width: 2, height: 2 },
+  factory_large: { width: 3, height: 3 },
   warehouse: { width: 2, height: 2 },
 };
 
@@ -1117,6 +1153,136 @@ function canPlaceMultiTileBuilding(
   }
   
   return true;
+}
+
+// Footprint helpers for organic growth and merging
+const MERGEABLE_BY_ZONE: Record<ZoneType, Set<BuildingType>> = {
+  residential: new Set<BuildingType>(['grass', 'empty', 'tree', 'house_small', 'house_medium', 'mansion', 'apartment_low', 'apartment_high']),
+  commercial: new Set<BuildingType>(['grass', 'empty', 'tree', 'shop_small', 'shop_medium', 'office_low', 'office_high', 'mall']),
+  industrial: new Set<BuildingType>(['grass', 'empty', 'tree', 'factory_small', 'factory_medium', 'factory_large', 'warehouse']),
+  none: new Set<BuildingType>(['grass', 'empty', 'tree']),
+};
+
+function isMergeableZoneTile(tile: Tile, zone: ZoneType): boolean {
+  if (tile.zone !== zone) return false;
+  if (tile.building.onFire) return false;
+  if (tile.building.type === 'water' || tile.building.type === 'road') return false;
+  return MERGEABLE_BY_ZONE[zone].has(tile.building.type);
+}
+
+function footprintAvailable(
+  grid: Tile[][],
+  originX: number,
+  originY: number,
+  width: number,
+  height: number,
+  zone: ZoneType,
+  gridSize: number
+): boolean {
+  if (originX < 0 || originY < 0 || originX + width > gridSize || originY + height > gridSize) {
+    return false;
+  }
+
+  for (let dy = 0; dy < height; dy++) {
+    for (let dx = 0; dx < width; dx++) {
+      const tile = grid[originY + dy][originX + dx];
+      if (!isMergeableZoneTile(tile, zone)) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function scoreFootprint(grid: Tile[][], originX: number, originY: number, width: number, height: number, gridSize: number): number {
+  // Prefer footprints that touch roads for access
+  let roadScore = 0;
+  const offsets = [
+    [-1, 0],
+    [1, 0],
+    [0, -1],
+    [0, 1],
+  ];
+
+  for (let dy = 0; dy < height; dy++) {
+    for (let dx = 0; dx < width; dx++) {
+      const gx = originX + dx;
+      const gy = originY + dy;
+      for (const [ox, oy] of offsets) {
+        const nx = gx + ox;
+        const ny = gy + oy;
+        if (nx >= 0 && ny >= 0 && nx < gridSize && ny < gridSize) {
+          if (grid[ny][nx].building.type === 'road') {
+            roadScore++;
+          }
+        }
+      }
+    }
+  }
+
+  // Smaller footprints and more road contacts rank higher
+  return roadScore - width * height * 0.25;
+}
+
+function findFootprintIncludingTile(
+  grid: Tile[][],
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  zone: ZoneType,
+  gridSize: number
+): { originX: number; originY: number } | null {
+  const candidates: { originX: number; originY: number; score: number }[] = [];
+
+  for (let oy = y - (height - 1); oy <= y; oy++) {
+    for (let ox = x - (width - 1); ox <= x; ox++) {
+      if (!footprintAvailable(grid, ox, oy, width, height, zone, gridSize)) continue;
+      if (x < ox || x >= ox + width || y < oy || y >= oy + height) continue;
+
+      const score = scoreFootprint(grid, ox, oy, width, height, gridSize);
+      candidates.push({ originX: ox, originY: oy, score });
+    }
+  }
+
+  if (candidates.length === 0) return null;
+  candidates.sort((a, b) => b.score - a.score);
+  return { originX: candidates[0].originX, originY: candidates[0].originY };
+}
+
+function applyBuildingFootprint(
+  grid: Tile[][],
+  originX: number,
+  originY: number,
+  buildingType: BuildingType,
+  zone: ZoneType,
+  level: number,
+  services?: ServiceCoverage
+): Building {
+  const size = getBuildingSize(buildingType);
+  const stats = BUILDING_STATS[buildingType];
+
+  for (let dy = 0; dy < size.height; dy++) {
+    for (let dx = 0; dx < size.width; dx++) {
+      const cell = grid[originY + dy][originX + dx];
+      if (dx === 0 && dy === 0) {
+        cell.building = createBuilding(buildingType);
+        cell.building.level = level;
+        cell.building.age = 0;
+        if (services) {
+          cell.building.powered = services.power[originY + dy][originX + dx];
+          cell.building.watered = services.water[originY + dy][originX + dx];
+        }
+      } else {
+        cell.building = createBuilding('empty');
+        cell.building.level = 0;
+      }
+      cell.zone = zone;
+      cell.pollution = dx === 0 && dy === 0 ? stats.pollution : 0;
+    }
+  }
+
+  return grid[originY][originX].building;
 }
 
 // Place a building or zone
@@ -1170,23 +1336,7 @@ export function placeBuilding(
       if (!canPlaceMultiTileBuilding(newGrid, x, y, size.width, size.height, state.gridSize)) {
         return state; // Can't place here
       }
-      
-      // Place the main building on the origin tile
-      newGrid[y][x].building = createBuilding(buildingType);
-      newGrid[y][x].zone = 'none';
-      
-      // Mark other tiles as part of this building (using a special marker)
-      // We'll use '_part' suffix conceptually - store reference to origin
-      for (let dy = 0; dy < size.height; dy++) {
-        for (let dx = 0; dx < size.width; dx++) {
-          if (dx === 0 && dy === 0) continue; // Skip origin
-          // Clear these tiles but don't place a visible building
-          // They are "occupied" by the main building
-          newGrid[y + dy][x + dx].building = createBuilding('grass');
-          newGrid[y + dy][x + dx].building.type = 'empty'; // Mark as empty but occupied
-          newGrid[y + dy][x + dx].zone = 'none';
-        }
-      }
+      applyBuildingFootprint(newGrid, x, y, buildingType, 'none', 1);
     } else {
       // Single tile building
       newGrid[y][x].building = createBuilding(buildingType);

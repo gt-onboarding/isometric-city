@@ -218,7 +218,7 @@ export interface GameState {
 // Building evolution paths based on zone and level
 export const RESIDENTIAL_BUILDINGS: BuildingType[] = ['house_small', 'house_medium', 'mansion', 'apartment_low', 'apartment_high'];
 export const COMMERCIAL_BUILDINGS: BuildingType[] = ['shop_small', 'shop_medium', 'office_low', 'office_high', 'mall'];
-export const INDUSTRIAL_BUILDINGS: BuildingType[] = ['factory_small', 'factory_medium', 'factory_large', 'warehouse', 'factory_large'];
+export const INDUSTRIAL_BUILDINGS: BuildingType[] = ['factory_small', 'factory_medium', 'warehouse', 'factory_large', 'factory_large'];
 
 export const BUILDING_STATS: Record<BuildingType, { maxPop: number; maxJobs: number; pollution: number; landValue: number }> = {
   empty: { maxPop: 0, maxJobs: 0, pollution: 0, landValue: 0 },
@@ -226,20 +226,20 @@ export const BUILDING_STATS: Record<BuildingType, { maxPop: number; maxJobs: num
   water: { maxPop: 0, maxJobs: 0, pollution: 0, landValue: 5 },
   road: { maxPop: 0, maxJobs: 0, pollution: 2, landValue: 0 },
   tree: { maxPop: 0, maxJobs: 0, pollution: -5, landValue: 2 },
-  house_small: { maxPop: 5, maxJobs: 0, pollution: 0, landValue: 10 },
-  house_medium: { maxPop: 12, maxJobs: 0, pollution: 0, landValue: 20 },
-  mansion: { maxPop: 8, maxJobs: 0, pollution: 0, landValue: 50 },
-  apartment_low: { maxPop: 40, maxJobs: 0, pollution: 1, landValue: 30 },
-  apartment_high: { maxPop: 100, maxJobs: 0, pollution: 2, landValue: 40 },
-  shop_small: { maxPop: 0, maxJobs: 8, pollution: 1, landValue: 15 },
-  shop_medium: { maxPop: 0, maxJobs: 20, pollution: 2, landValue: 25 },
-  office_low: { maxPop: 0, maxJobs: 50, pollution: 1, landValue: 35 },
-  office_high: { maxPop: 0, maxJobs: 150, pollution: 2, landValue: 50 },
-  mall: { maxPop: 0, maxJobs: 200, pollution: 5, landValue: 60 },
-  factory_small: { maxPop: 0, maxJobs: 30, pollution: 15, landValue: -5 },
-  factory_medium: { maxPop: 0, maxJobs: 60, pollution: 25, landValue: -10 },
-  factory_large: { maxPop: 0, maxJobs: 100, pollution: 40, landValue: -15 },
-  warehouse: { maxPop: 0, maxJobs: 20, pollution: 10, landValue: -5 },
+  house_small: { maxPop: 6, maxJobs: 0, pollution: 0, landValue: 10 },
+  house_medium: { maxPop: 14, maxJobs: 0, pollution: 0, landValue: 22 },
+  mansion: { maxPop: 18, maxJobs: 0, pollution: 0, landValue: 60 },
+  apartment_low: { maxPop: 120, maxJobs: 0, pollution: 2, landValue: 40 },
+  apartment_high: { maxPop: 260, maxJobs: 0, pollution: 3, landValue: 55 },
+  shop_small: { maxPop: 0, maxJobs: 10, pollution: 1, landValue: 16 },
+  shop_medium: { maxPop: 0, maxJobs: 28, pollution: 2, landValue: 26 },
+  office_low: { maxPop: 0, maxJobs: 90, pollution: 2, landValue: 40 },
+  office_high: { maxPop: 0, maxJobs: 210, pollution: 3, landValue: 55 },
+  mall: { maxPop: 0, maxJobs: 260, pollution: 6, landValue: 70 },
+  factory_small: { maxPop: 0, maxJobs: 40, pollution: 15, landValue: -5 },
+  factory_medium: { maxPop: 0, maxJobs: 90, pollution: 28, landValue: -10 },
+  factory_large: { maxPop: 0, maxJobs: 180, pollution: 55, landValue: -18 },
+  warehouse: { maxPop: 0, maxJobs: 60, pollution: 18, landValue: -6 },
   police_station: { maxPop: 0, maxJobs: 20, pollution: 0, landValue: 15 },
   fire_station: { maxPop: 0, maxJobs: 20, pollution: 0, landValue: 10 },
   hospital: { maxPop: 0, maxJobs: 80, pollution: 0, landValue: 25 },
