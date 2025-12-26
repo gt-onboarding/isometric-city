@@ -259,7 +259,7 @@ export const TopBar = React.memo(function TopBar() {
 
         <Separator orientation="vertical" className="h-8" />
 
-        <LocaleSelector />
+        <LocaleSelector style={{ backgroundColor: 'transparent' }} />
       </div>
     </div>
   );

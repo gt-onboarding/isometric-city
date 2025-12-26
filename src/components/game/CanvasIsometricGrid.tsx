@@ -6,7 +6,7 @@ import { TOOL_INFO, Tile, BuildingType, AdjacentCity, Tool } from '@/types/game'
 import { getBuildingSize, requiresWaterAdjacency, getWaterAdjacency, getRoadAdjacency } from '@/lib/simulation';
 import { FireIcon, SafetyIcon } from '@/components/ui/Icons';
 import { getSpriteCoords, BUILDING_TO_SPRITE, SPRITE_VERTICAL_OFFSETS, SPRITE_HORIZONTAL_OFFSETS, getActiveSpritePack } from '@/lib/renderConfig';
-import { T, Var, useGT } from 'gt-next';
+import { T, Var, useGT, useMessages } from 'gt-next';
 
 // Import shadcn components
 import { Button } from '@/components/ui/button';
@@ -129,6 +129,7 @@ export interface CanvasIsometricGridProps {
 // Canvas-based Isometric Grid - HIGH PERFORMANCE
 export function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile, isMobile = false, navigationTarget, onNavigationComplete, onViewportChange, onBargeDelivery }: CanvasIsometricGridProps) {
   const gt = useGT();
+  const m = useMessages();
   const { state, placeAtTile, connectToCity, checkAndDiscoverCities, currentSpritePack, visualHour } = useGame();
   const { grid, gridSize, selectedTool, speed, adjacentCities, waterBodies, gameVersion } = state;
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -4150,7 +4151,7 @@ export function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile
             {isDragging && dragStartTile && dragEndTile && showsDragGrid ? (
               <>
                 {gt('{name} - {width}x{height} area', {
-                  name: TOOL_INFO[selectedTool].name,
+                  name: m(TOOL_INFO[selectedTool].name),
                   width: Math.abs(dragEndTile.x - dragStartTile.x) + 1,
                   height: Math.abs(dragEndTile.y - dragStartTile.y) + 1
                 })}
@@ -4158,12 +4159,12 @@ export function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile
               </>
             ) : isWaterfrontPlacementInvalid ? (
               <>
-                {gt('{name} must be placed next to water', { name: TOOL_INFO[selectedTool].name })}
+                {gt('{name} must be placed next to water', { name: m(TOOL_INFO[selectedTool].name) })}
               </>
             ) : (
               <>
                 {gt('{name} at ({x}, {y})', {
-                  name: TOOL_INFO[selectedTool].name,
+                  name: m(TOOL_INFO[selectedTool].name),
                   x: hoveredTile.x,
                   y: hoveredTile.y
                 })}

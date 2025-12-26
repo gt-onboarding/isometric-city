@@ -23,7 +23,7 @@ import {
   EducationIcon,
   SafetyIcon,
 } from '@/components/ui/Icons';
-import { useGT } from 'gt-next';
+import { useGT, useMessages } from 'gt-next';
 
 // Tool category icons
 const CategoryIcons: Record<string, React.ReactNode> = {
@@ -217,6 +217,7 @@ interface MobileToolbarProps {
 
 export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMode }: MobileToolbarProps) {
   const gt = useGT();
+  const m = useMessages();
   const { state, setTool } = useGame();
   const { selectedTool, stats } = state;
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
@@ -252,7 +253,7 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
           {selectedTool && TOOL_INFO[selectedTool] && (
             <div className="flex items-center justify-between px-4 py-1.5 border-b border-sidebar-border/50 bg-secondary/30 text-xs">
               <span className="text-foreground font-medium">
-                {TOOL_INFO[selectedTool].name}
+                {m(TOOL_INFO[selectedTool].name)}
               </span>
               {TOOL_INFO[selectedTool].cost > 0 && (
                 <span className={`font-mono ${stats.money >= TOOL_INFO[selectedTool].cost ? 'text-green-400' : 'text-red-400'}`}>
@@ -524,7 +525,7 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
                               disabled={!canAfford && info.cost > 0}
                               onClick={() => handleToolSelect(tool, true)}
                             >
-                              <span className="flex-1 text-left">{info.name}</span>
+                              <span className="flex-1 text-left">{m(info.name)}</span>
                               {info.cost > 0 && (
                                 <span className={`text-xs font-mono ${canAfford ? 'text-green-400' : 'text-red-400'}`}>
                                   ${info.cost}
