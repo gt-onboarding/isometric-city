@@ -5,10 +5,8 @@ import { useGame } from '@/context/GameContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getSpriteCoords } from '@/lib/renderConfig';
-import { T, Var, useGT } from 'gt-next';
 
 export function SpriteTestPanel({ onClose }: { onClose: () => void }) {
-  const gt = useGT();
   const { currentSpritePack } = useGame();
   const [selectedTab, setSelectedTab] = useState<string>('main');
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -55,14 +53,14 @@ export function SpriteTestPanel({ onClose }: { onClose: () => void }) {
   }, [currentSpritePack]);
   
   const availableTabs = useMemo(() => [
-    { id: 'main', label: gt('Main'), available: !!spriteSheets.main },
-    { id: 'construction', label: gt('Construction'), available: !!spriteSheets.construction },
-    { id: 'abandoned', label: gt('Abandoned'), available: !!spriteSheets.abandoned },
-    { id: 'dense', label: gt('High Density'), available: !!spriteSheets.dense },
-    { id: 'modern', label: gt('Modern'), available: !!spriteSheets.modern },
-    { id: 'parks', label: gt('Parks'), available: !!spriteSheets.parks },
-    { id: 'parksConstruction', label: gt('Parks Construction'), available: !!spriteSheets.parksConstruction },
-  ].filter(tab => tab.available), [spriteSheets, gt]);
+    { id: 'main', label: 'Main', available: !!spriteSheets.main },
+    { id: 'construction', label: 'Construction', available: !!spriteSheets.construction },
+    { id: 'abandoned', label: 'Abandoned', available: !!spriteSheets.abandoned },
+    { id: 'dense', label: 'High Density', available: !!spriteSheets.dense },
+    { id: 'modern', label: 'Modern', available: !!spriteSheets.modern },
+    { id: 'parks', label: 'Parks', available: !!spriteSheets.parks },
+    { id: 'parksConstruction', label: 'Parks Construction', available: !!spriteSheets.parksConstruction },
+  ].filter(tab => tab.available), [spriteSheets]);
   
   // Derive the actual active tab - fall back to first available if selected is not available
   const activeTab = useMemo(() => {
@@ -296,16 +294,12 @@ export function SpriteTestPanel({ onClose }: { onClose: () => void }) {
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-[700px] max-h-[90vh]">
         <DialogHeader>
-          <T>
-            <DialogTitle>Sprite Test View</DialogTitle>
-          </T>
-          <T>
-            <DialogDescription>
-              View all sprite variants from &quot;<Var>{currentSpritePack.name}</Var>&quot;
-            </DialogDescription>
-          </T>
+          <DialogTitle>Sprite Test View</DialogTitle>
+          <DialogDescription>
+            View all sprite variants from &quot;{currentSpritePack.name}&quot;
+          </DialogDescription>
         </DialogHeader>
-
+        
         <Tabs value={activeTab} onValueChange={setSelectedTab} className="w-full">
           <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${availableTabs.length}, 1fr)` }}>
             {availableTabs.map(tab => (
@@ -315,7 +309,7 @@ export function SpriteTestPanel({ onClose }: { onClose: () => void }) {
             ))}
           </TabsList>
         </Tabs>
-
+        
         <div className="overflow-auto max-h-[70vh] bg-[#1a1a2e] rounded-lg">
           <canvas
             ref={canvasRef}
@@ -323,14 +317,10 @@ export function SpriteTestPanel({ onClose }: { onClose: () => void }) {
             style={{ imageRendering: 'pixelated' }}
           />
         </div>
-
+        
         <div className="text-xs text-muted-foreground space-y-1">
-          <T>
-            <p>Sprite sheet: <Var>{currentSheetInfo}</Var> (<Var>{gridInfo}</Var> grid)</p>
-          </T>
-          <T>
-            <p>Edit offsets in <code className="bg-muted px-1 rounded">src/lib/renderConfig.ts</code> → each sprite pack&apos;s verticalOffsets</p>
-          </T>
+          <p>Sprite sheet: {currentSheetInfo} ({gridInfo} grid)</p>
+          <p>Edit offsets in <code className="bg-muted px-1 rounded">src/lib/renderConfig.ts</code> → each sprite pack&apos;s verticalOffsets</p>
         </div>
       </DialogContent>
     </Dialog>

@@ -4,7 +4,6 @@ import React, { useRef, useState, useCallback, useEffect, useMemo } from 'react'
 import { useGame } from '@/context/GameContext';
 import { Card } from '@/components/ui/card';
 import { TILE_WIDTH, TILE_HEIGHT } from '@/components/game/types';
-import { T, useGT } from 'gt-next';
 
 // Service buildings for minimap color mapping
 const SERVICE_BUILDINGS = new Set([
@@ -35,7 +34,6 @@ interface MiniMapProps {
 export const MiniMap = React.memo(function MiniMap({ onNavigate, viewport }: MiniMapProps) {
   const { state } = useGame();
   const { grid, gridSize, tick } = state;
-  const gt = useGT();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gridImageRef = useRef<ImageData | null>(null);
   const lastGridRenderTickRef = useRef(-1);
@@ -189,11 +187,9 @@ export const MiniMap = React.memo(function MiniMap({ onNavigate, viewport }: Min
   
   return (
     <Card className="absolute bottom-6 right-8 p-3 shadow-lg bg-card/90 border-border/70">
-      <T>
-        <div className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground font-semibold mb-2">
-          Minimap
-        </div>
-      </T>
+      <div className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground font-semibold mb-2">
+        Minimap
+      </div>
       <canvas
         ref={canvasRef}
         width={140}
@@ -207,19 +203,19 @@ export const MiniMap = React.memo(function MiniMap({ onNavigate, viewport }: Min
       <div className="mt-2 grid grid-cols-4 gap-1 text-[8px]">
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 bg-green-500 rounded-sm" />
-          <span className="text-muted-foreground">{gt('R', { $context: 'Residential zone abbreviation' })}</span>
+          <span className="text-muted-foreground">R</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 bg-blue-500 rounded-sm" />
-          <span className="text-muted-foreground">{gt('C', { $context: 'Commercial zone abbreviation' })}</span>
+          <span className="text-muted-foreground">C</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 bg-amber-500 rounded-sm" />
-          <span className="text-muted-foreground">{gt('I', { $context: 'Industrial zone abbreviation' })}</span>
+          <span className="text-muted-foreground">I</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 bg-pink-500 rounded-sm" />
-          <span className="text-muted-foreground">{gt('S', { $context: 'Service buildings abbreviation' })}</span>
+          <span className="text-muted-foreground">S</span>
         </div>
       </div>
     </Card>

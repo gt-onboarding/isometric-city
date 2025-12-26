@@ -5,7 +5,6 @@
 
 import { Tile } from '@/types/game';
 import { OverlayMode } from './types';
-import { msg } from 'gt-next';
 
 // ============================================================================
 // Types
@@ -38,50 +37,50 @@ export type OverlayConfig = {
 /** Configuration for each overlay mode */
 export const OVERLAY_CONFIG: Record<OverlayMode, OverlayConfig> = {
   none: {
-    label: msg('None'),
-    title: msg('No Overlay'),
+    label: 'None',
+    title: 'No Overlay',
     activeColor: '',
     hoverColor: '',
   },
   power: {
-    label: msg('Power'),
-    title: msg('Power Grid'),
+    label: 'Power',
+    title: 'Power Grid',
     activeColor: 'bg-amber-500',
     hoverColor: 'hover:bg-amber-600',
   },
   water: {
-    label: msg('Water'),
-    title: msg('Water System'),
+    label: 'Water',
+    title: 'Water System',
     activeColor: 'bg-blue-500',
     hoverColor: 'hover:bg-blue-600',
   },
   fire: {
-    label: msg('Fire'),
-    title: msg('Fire Coverage'),
+    label: 'Fire',
+    title: 'Fire Coverage',
     activeColor: 'bg-red-500',
     hoverColor: 'hover:bg-red-600',
   },
   police: {
-    label: msg('Police'),
-    title: msg('Police Coverage'),
+    label: 'Police',
+    title: 'Police Coverage',
     activeColor: 'bg-blue-600',
     hoverColor: 'hover:bg-blue-700',
   },
   health: {
-    label: msg('Health'),
-    title: msg('Health Coverage'),
+    label: 'Health',
+    title: 'Health Coverage',
     activeColor: 'bg-green-500',
     hoverColor: 'hover:bg-green-600',
   },
   education: {
-    label: msg('Education'),
-    title: msg('Education Coverage'),
+    label: 'Education',
+    title: 'Education Coverage',
     activeColor: 'bg-purple-500',
     hoverColor: 'hover:bg-purple-600',
   },
   subway: {
-    label: msg('Subway'),
-    title: msg('Subway Coverage'),
+    label: 'Subway',
+    title: 'Subway Coverage',
     activeColor: 'bg-yellow-500',
     hoverColor: 'hover:bg-yellow-600',
   },

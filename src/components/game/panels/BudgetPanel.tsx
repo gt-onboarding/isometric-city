@@ -5,13 +5,10 @@ import { useGame } from '@/context/GameContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { useMessages, useGT } from 'gt-next';
 
 export function BudgetPanel() {
   const { state, setActivePanel, setBudgetFunding } = useGame();
   const { budget, stats } = state;
-  const m = useMessages();
-  const gt = useGT();
   
   const categories = [
     { key: 'police', ...budget.police },
@@ -28,21 +25,21 @@ export function BudgetPanel() {
     <Dialog open={true} onOpenChange={() => setActivePanel('none')}>
       <DialogContent className="max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{gt('Budget')}</DialogTitle>
+          <DialogTitle>Budget</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-6">
           <div className="grid grid-cols-3 gap-4 pb-4 border-b border-border">
             <div>
-              <div className="text-muted-foreground text-xs mb-1">{gt('Income')}</div>
+              <div className="text-muted-foreground text-xs mb-1">Income</div>
               <div className="text-green-400 font-mono">${stats.income.toLocaleString()}/mo</div>
             </div>
             <div>
-              <div className="text-muted-foreground text-xs mb-1">{gt('Expenses')}</div>
+              <div className="text-muted-foreground text-xs mb-1">Expenses</div>
               <div className="text-red-400 font-mono">${stats.expenses.toLocaleString()}/mo</div>
             </div>
             <div>
-              <div className="text-muted-foreground text-xs mb-1">{gt('Net')}</div>
+              <div className="text-muted-foreground text-xs mb-1">Net</div>
               <div className={`font-mono ${stats.income - stats.expenses >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                 ${(stats.income - stats.expenses).toLocaleString()}/mo
               </div>
@@ -52,7 +49,7 @@ export function BudgetPanel() {
           <div className="space-y-4">
             {categories.map(cat => (
               <div key={cat.key} className="flex items-center gap-4">
-                <Label className="w-28 text-sm">{m(cat.name)}</Label>
+                <Label className="w-28 text-sm">{cat.name}</Label>
                 <Slider
                   value={[cat.funding]}
                   onValueChange={(value) => setBudgetFunding(cat.key as keyof typeof budget, value[0])}

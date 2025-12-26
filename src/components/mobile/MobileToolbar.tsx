@@ -23,7 +23,6 @@ import {
   EducationIcon,
   SafetyIcon,
 } from '@/components/ui/Icons';
-import { useGT } from 'gt-next';
 
 // Tool category icons
 const CategoryIcons: Record<string, React.ReactNode> = {
@@ -216,7 +215,6 @@ interface MobileToolbarProps {
 }
 
 export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMode }: MobileToolbarProps) {
-  const gt = useGT();
   const { state, setTool } = useGame();
   const { selectedTool, stats } = state;
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
@@ -359,7 +357,7 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
             {/* City Management section at top */}
             <div className="p-3 border-b border-border flex-shrink-0">
               <div className="text-xs text-muted-foreground uppercase tracking-wider mb-2">
-                {gt('City Management')}
+                City Management
               </div>
               <div className="grid grid-cols-4 gap-2">
                 <Button
@@ -368,7 +366,7 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
                   className="h-10 w-full text-xs"
                   onClick={() => { onOpenPanel('budget'); setShowMenu(false); }}
                 >
-                  {gt('Budget')}
+                  Budget
                 </Button>
                 <Button
                   variant="ghost"
@@ -376,7 +374,7 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
                   className="h-10 w-full text-xs"
                   onClick={() => { onOpenPanel('statistics'); setShowMenu(false); }}
                 >
-                  {gt('Stats')}
+                  Stats
                 </Button>
                 <Button
                   variant="ghost"
@@ -384,7 +382,7 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
                   className="h-10 w-full text-xs"
                   onClick={() => { onOpenPanel('advisors'); setShowMenu(false); }}
                 >
-                  {gt('Advisors')}
+                  Advisors
                 </Button>
                 <Button
                   variant="ghost"
@@ -392,7 +390,7 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
                   className="h-10 w-full text-xs"
                   onClick={() => { onOpenPanel('settings'); setShowMenu(false); }}
                 >
-                  {gt('Settings')}
+                  Settings
                 </Button>
               </div>
             </div>
@@ -401,7 +399,7 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
             {setOverlayMode && (
               <div className="p-3 border-b border-border flex-shrink-0">
                 <div className="text-xs text-muted-foreground uppercase tracking-wider mb-2">
-                  {gt('View Overlays')}
+                  View Overlays
                 </div>
                 <div className="grid grid-cols-4 gap-2">
                   <Button
@@ -410,7 +408,7 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
                     className="h-10 w-full text-xs"
                     onClick={() => setOverlayMode('none')}
                   >
-                    {gt('None')}
+                    None
                   </Button>
                   <Button
                     variant={overlayMode === 'power' ? 'default' : 'ghost'}
@@ -418,7 +416,7 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
                     className={`h-10 w-full text-xs ${overlayMode === 'power' ? 'bg-amber-500 hover:bg-amber-600' : ''}`}
                     onClick={() => setOverlayMode('power')}
                   >
-                    {gt('Power')}
+                    Power
                   </Button>
                   <Button
                     variant={overlayMode === 'water' ? 'default' : 'ghost'}
@@ -426,7 +424,7 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
                     className={`h-10 w-full text-xs ${overlayMode === 'water' ? 'bg-blue-500 hover:bg-blue-600' : ''}`}
                     onClick={() => setOverlayMode('water')}
                   >
-                    {gt('Water')}
+                    Water
                   </Button>
                   <Button
                     variant={overlayMode === 'fire' ? 'default' : 'ghost'}
@@ -434,7 +432,7 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
                     className={`h-10 w-full text-xs ${overlayMode === 'fire' ? 'bg-red-500 hover:bg-red-600' : ''}`}
                     onClick={() => setOverlayMode('fire')}
                   >
-                    {gt('Fire')}
+                    Fire
                   </Button>
                   <Button
                     variant={overlayMode === 'police' ? 'default' : 'ghost'}
@@ -442,7 +440,7 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
                     className={`h-10 w-full text-xs ${overlayMode === 'police' ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
                     onClick={() => setOverlayMode('police')}
                   >
-                    {gt('Police')}
+                    Police
                   </Button>
                   <Button
                     variant={overlayMode === 'health' ? 'default' : 'ghost'}
@@ -450,7 +448,7 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
                     className={`h-10 w-full text-xs ${overlayMode === 'health' ? 'bg-green-500 hover:bg-green-600' : ''}`}
                     onClick={() => setOverlayMode('health')}
                   >
-                    {gt('Health')}
+                    Health
                   </Button>
                   <Button
                     variant={overlayMode === 'education' ? 'default' : 'ghost'}
@@ -458,7 +456,7 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
                     className={`h-10 w-full text-xs ${overlayMode === 'education' ? 'bg-purple-500 hover:bg-purple-600' : ''}`}
                     onClick={() => setOverlayMode('education')}
                   >
-                    {gt('Education')}
+                    Education
                   </Button>
                   <Button
                     variant={overlayMode === 'subway' ? 'default' : 'ghost'}
@@ -466,7 +464,7 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
                     className={`h-10 w-full text-xs ${overlayMode === 'subway' ? 'bg-yellow-500 hover:bg-yellow-600' : ''}`}
                     onClick={() => setOverlayMode('subway')}
                   >
-                    {gt('Subway')}
+                    Subway
                   </Button>
                 </div>
               </div>
@@ -475,28 +473,14 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
               <div className="p-2 space-y-1 pb-4">
                 {/* Category buttons */}
-                {Object.entries(toolCategories).map(([category, tools]) => {
-                  const categoryTranslations: Record<string, string> = {
-                    'TOOLS': gt('TOOLS'),
-                    'ZONES': gt('ZONES'),
-                    'ZONING': gt('ZONING'),
-                    'UTILITIES': gt('UTILITIES'),
-                    'SERVICES': gt('SERVICES'),
-                    'PARKS': gt('PARKS'),
-                    'SPORTS': gt('SPORTS'),
-                    'WATERFRONT': gt('WATERFRONT'),
-                    'COMMUNITY': gt('COMMUNITY'),
-                    'SPECIAL': gt('SPECIAL'),
-                  };
-
-                  return (
+                {Object.entries(toolCategories).map(([category, tools]) => (
                   <div key={category}>
                     <Button
                       variant={expandedCategory === category ? 'secondary' : 'ghost'}
                       className="w-full justify-start gap-3 h-12"
                       onClick={() => handleCategoryClick(category)}
                     >
-                      <span className="flex-1 text-left font-medium">{categoryTranslations[category]}</span>
+                      <span className="flex-1 text-left font-medium">{category}</span>
                       <svg
                         className={`w-4 h-4 transition-transform ${expandedCategory === category ? 'rotate-180' : ''}`}
                         viewBox="0 0 24 24"
@@ -536,8 +520,7 @@ export function MobileToolbar({ onOpenPanel, overlayMode = 'none', setOverlayMod
                       </div>
                     )}
                   </div>
-                  );
-                })}
+                ))}
               </div>
             </div>
           </Card>

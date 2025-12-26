@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Playfair_Display, DM_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
-import { getLocale, getGT } from "gt-next/server";
+import { getLocale } from "gt-next/server";
 import { GTProvider } from "gt-next";
 
 const playfair = Playfair_Display({
@@ -19,54 +19,50 @@ const dmSans = DM_Sans({
   weight: ['400', '500', '600', '700']
 });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const gt = await getGT();
+export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.VERCEL_URL ?
+    `https://${process.env.VERCEL_URL}` :
+    'http://localhost:3000'
+  ),
+  title: 'ISOCITY — Metropolis Builder',
+  description: 'A richly detailed isometric city builder. Build your metropolis and manage resources with cars, planes, helicopters, boats, trains, citizens, and more.',
+  openGraph: {
+    title: 'ISOCITY — Metropolis Builder',
+    description: 'A richly detailed isometric city builder. Build your metropolis and manage resources with cars, planes, helicopters, boats, trains, citizens, and more.',
+    type: 'website',
+    images: [
+    {
+      url: '/opengraph-image',
+      width: 1179,
+      height: 1406,
+      type: 'image/png',
+      alt: 'ISOCITY - Isometric city builder game screenshot'
+    }]
 
-  return {
-    metadataBase: new URL(
-      process.env.VERCEL_URL ?
-      `https://${process.env.VERCEL_URL}` :
-      'http://localhost:3000'
-    ),
-    title: gt('ISOCITY — Metropolis Builder'),
-    description: gt('A richly detailed isometric city builder. Build your metropolis and manage resources with cars, planes, helicopters, boats, trains, citizens, and more.'),
-    openGraph: {
-      title: gt('ISOCITY — Metropolis Builder'),
-      description: gt('A richly detailed isometric city builder. Build your metropolis and manage resources with cars, planes, helicopters, boats, trains, citizens, and more.'),
-      type: 'website',
-      images: [
-      {
-        url: '/opengraph-image',
-        width: 1179,
-        height: 1406,
-        type: 'image/png',
-        alt: gt('ISOCITY - Isometric city builder game screenshot')
-      }]
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ISOCITY — Metropolis Builder',
+    description: 'A richly detailed isometric city builder. Build your metropolis and manage resources with cars, planes, helicopters, boats, trains, citizens, and more.',
+    images: [
+    {
+      url: '/opengraph-image',
+      width: 1179,
+      height: 1406,
+      alt: 'ISOCITY - Isometric city builder game screenshot'
+    }]
 
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: gt('ISOCITY — Metropolis Builder'),
-      description: gt('A richly detailed isometric city builder. Build your metropolis and manage resources with cars, planes, helicopters, boats, trains, citizens, and more.'),
-      images: [
-      {
-        url: '/opengraph-image',
-        width: 1179,
-        height: 1406,
-        alt: gt('ISOCITY - Isometric city builder game screenshot')
-      }]
-
-    },
-    appleWebApp: {
-      capable: true,
-      statusBarStyle: 'black-translucent',
-      title: gt('IsoCity')
-    },
-    formatDetection: {
-      telephone: false
-    }
-  };
-}
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'IsoCity'
+  },
+  formatDetection: {
+    telephone: false
+  }
+};
 
 export const viewport: Viewport = {
   width: 'device-width',

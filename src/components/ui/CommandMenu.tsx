@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
-import { msg, useMessages, useGT } from 'gt-next';
 
 // Global callback to open the command menu
 let openCommandMenuCallback: (() => void) | null = null;
@@ -32,17 +31,17 @@ interface MenuItem {
 }
 
 const MENU_CATEGORIES = [
-  { key: 'tools', label: msg('Tools') },
-  { key: 'zones', label: msg('Zones') },
-  { key: 'zoning', label: msg('Zoning') },
-  { key: 'services', label: msg('Services') },
-  { key: 'parks', label: msg('Parks') },
-  { key: 'sports', label: msg('Sports') },
-  { key: 'waterfront', label: msg('Waterfront') },
-  { key: 'community', label: msg('Community') },
-  { key: 'utilities', label: msg('Utilities') },
-  { key: 'special', label: msg('Special') },
-  { key: 'panels', label: msg('Panels') },
+  { key: 'tools', label: 'Tools' },
+  { key: 'zones', label: 'Zones' },
+  { key: 'zoning', label: 'Zoning' },
+  { key: 'services', label: 'Services' },
+  { key: 'parks', label: 'Parks' },
+  { key: 'sports', label: 'Sports' },
+  { key: 'waterfront', label: 'Waterfront' },
+  { key: 'community', label: 'Community' },
+  { key: 'utilities', label: 'Utilities' },
+  { key: 'special', label: 'Special' },
+  { key: 'panels', label: 'Panels' },
 ] as const;
 
 // Build menu items from tools
@@ -219,10 +218,10 @@ function buildMenuItems(): MenuItem[] {
 
   // Panels
   const panels: { panel: 'budget' | 'statistics' | 'advisors' | 'settings'; name: string; description: string; keywords: string[] }[] = [
-    { panel: 'budget', name: msg('Budget'), description: msg('Manage city finances and funding'), keywords: ['budget', 'money', 'finance', 'tax', 'funding'] },
-    { panel: 'statistics', name: msg('Statistics'), description: msg('View city statistics and charts'), keywords: ['statistics', 'stats', 'charts', 'data', 'info'] },
-    { panel: 'advisors', name: msg('Advisors'), description: msg('Get advice from city advisors'), keywords: ['advisors', 'advice', 'help', 'tips'] },
-    { panel: 'settings', name: msg('Settings'), description: msg('Game settings and preferences'), keywords: ['settings', 'options', 'preferences', 'config'] },
+    { panel: 'budget', name: 'Budget', description: 'Manage city finances and funding', keywords: ['budget', 'money', 'finance', 'tax', 'funding'] },
+    { panel: 'statistics', name: 'Statistics', description: 'View city statistics and charts', keywords: ['statistics', 'stats', 'charts', 'data', 'info'] },
+    { panel: 'advisors', name: 'Advisors', description: 'Get advice from city advisors', keywords: ['advisors', 'advice', 'help', 'tips'] },
+    { panel: 'settings', name: 'Settings', description: 'Game settings and preferences', keywords: ['settings', 'options', 'preferences', 'config'] },
   ];
 
   panels.forEach(({ panel, name, description, keywords }) => {
@@ -246,8 +245,6 @@ export function CommandMenu() {
   const { isMobileDevice } = useMobile();
   const { state, setTool, setActivePanel } = useGame();
   const { stats } = state;
-  const m = useMessages();
-  const gt = useGT();
 
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -391,7 +388,7 @@ export function CommandMenu() {
         onKeyDown={handleKeyDown}
       >
         <VisuallyHidden.Root>
-          <DialogTitle>{gt('Command Menu')}</DialogTitle>
+          <DialogTitle>Command Menu</DialogTitle>
         </VisuallyHidden.Root>
         
         {/* Search input */}
@@ -408,7 +405,7 @@ export function CommandMenu() {
             ref={inputRef}
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
-            placeholder={gt('Search tools, buildings, panels...')}
+            placeholder="Search tools, buildings, panels..."
             className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent h-12 text-sm"
           />
           <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border border-sidebar-border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
@@ -421,7 +418,7 @@ export function CommandMenu() {
           <div ref={listRef} className="p-2">
             {flatItems.length === 0 ? (
               <div className="py-6 text-center text-sm text-muted-foreground">
-                {gt('No results found.')}
+                No results found.
               </div>
             ) : (
               MENU_CATEGORIES.map(category => {
@@ -431,7 +428,7 @@ export function CommandMenu() {
                 return (
                   <div key={category.key} className="mb-2">
                     <div className="px-2 py-1.5 text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
-                      {m(category.label)}
+                      {category.label}
                     </div>
                     <div className="flex flex-col gap-0.5">
                       {items.map((item) => {
@@ -454,12 +451,12 @@ export function CommandMenu() {
                             )}
                           >
                             <div className="flex flex-col gap-0.5 min-w-0">
-                              <span className="font-medium truncate">{m(item.name)}</span>
+                              <span className="font-medium truncate">{item.name}</span>
                               <span className={cn(
                                 'text-xs truncate',
                                 isSelected ? 'text-primary-foreground/70' : 'text-muted-foreground'
                               )}>
-                                {m(item.description)}
+                                {item.description}
                               </span>
                             </div>
                             {item.cost !== undefined && item.cost > 0 && (
@@ -487,17 +484,17 @@ export function CommandMenu() {
             <span className="flex items-center gap-1">
               <kbd className="inline-flex h-4 items-center rounded border border-sidebar-border bg-muted px-1 font-mono text-[10px]">↑</kbd>
               <kbd className="inline-flex h-4 items-center rounded border border-sidebar-border bg-muted px-1 font-mono text-[10px]">↓</kbd>
-              <span>{gt('navigate')}</span>
+              <span>navigate</span>
             </span>
             <span className="flex items-center gap-1">
               <kbd className="inline-flex h-4 items-center rounded border border-sidebar-border bg-muted px-1 font-mono text-[10px]">↵</kbd>
-              <span>{gt('select')}</span>
+              <span>select</span>
             </span>
           </div>
           <span className="flex items-center gap-1">
             <kbd className="inline-flex h-4 items-center rounded border border-sidebar-border bg-muted px-1 font-mono text-[10px]">⌘</kbd>
             <kbd className="inline-flex h-4 items-center rounded border border-sidebar-border bg-muted px-1 font-mono text-[10px]">K</kbd>
-            <span>{gt('to toggle')}</span>
+            <span>to toggle</span>
           </span>
         </div>
       </DialogContent>

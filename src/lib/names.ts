@@ -1,49 +1,48 @@
 // Name generation utilities for cities and water bodies
-import { msg } from 'gt-next';
 
 const CITY_NAME_PARTS = [
-  msg('Spring'), msg('Riverside'), msg('Harbor'), msg('Valley'), msg('Hill'), msg('Bay'), msg('Creek'), msg('Park'),
-  msg('Lake'), msg('Mountain'), msg('Beach'), msg('Forest'), msg('Bridge'), msg('Port'), msg('View'), msg('Heights'),
-  msg('Grove'), msg('Meadow'), msg('Ridge'), msg('Point'), msg('Falls'), msg('Brook'), msg('Pine'), msg('Oak'),
-  msg('Maple'), msg('Cedar'), msg('Elm'), msg('Willow'), msg('Ash'), msg('Birch'), msg('Green'), msg('Blue'),
-  msg('White'), msg('Black'), msg('Red'), msg('New'), msg('Old'), msg('East'), msg('West'), msg('North'), msg('South'),
-  msg('Grand'), msg('Little'), msg('Big'), msg('Upper'), msg('Lower'), msg('Central'), msg('Fair'), msg('Bright'),
-  msg('Sunny'), msg('Clear'), msg('Rock'), msg('Stone'), msg('Iron'), msg('Gold'), msg('Silver'), msg('Copper'),
-  msg('Mill'), msg('Town'), msg('City'), msg('Ville'), msg('Burg'), msg('Field'), msg('Land'), msg('Wood'),
+  'Spring', 'Riverside', 'Harbor', 'Valley', 'Hill', 'Bay', 'Creek', 'Park',
+  'Lake', 'Mountain', 'Beach', 'Forest', 'Bridge', 'Port', 'View', 'Heights',
+  'Grove', 'Meadow', 'Ridge', 'Point', 'Falls', 'Brook', 'Pine', 'Oak',
+  'Maple', 'Cedar', 'Elm', 'Willow', 'Ash', 'Birch', 'Green', 'Blue',
+  'White', 'Black', 'Red', 'New', 'Old', 'East', 'West', 'North', 'South',
+  'Grand', 'Little', 'Big', 'Upper', 'Lower', 'Central', 'Fair', 'Bright',
+  'Sunny', 'Clear', 'Rock', 'Stone', 'Iron', 'Gold', 'Silver', 'Copper',
+  'Mill', 'Town', 'City', 'Ville', 'Burg', 'Field', 'Land', 'Wood',
 ];
 
 const CITY_SUFFIXES = [
-  msg('City'), msg('Town'), msg('Ville'), msg('Burg'), msg('Port'), msg('Harbor'), msg('Bay'), msg('Beach'),
-  msg('Park'), msg('Heights'), msg('Hills'), msg('Valley'), msg('Ridge'), msg('Point'), msg('Falls'),
-  msg('Springs'), msg('Grove'), msg('Meadow'), msg('Field'), msg('Woods'), msg('Lake'), msg('River'),
+  'City', 'Town', 'Ville', 'Burg', 'Port', 'Harbor', 'Bay', 'Beach',
+  'Park', 'Heights', 'Hills', 'Valley', 'Ridge', 'Point', 'Falls',
+  'Springs', 'Grove', 'Meadow', 'Field', 'Woods', 'Lake', 'River',
 ];
 
 const LAKE_NAMES = [
-  msg('Pine Lake'), msg('Crystal Lake'), msg('Emerald Lake'), msg('Blue Lake'), msg('Clear Lake'),
-  msg('Silver Lake'), msg('Golden Lake'), msg('Mountain Lake'), msg('Forest Lake'), msg('Sunset Lake'),
-  msg('Sunrise Lake'), msg('Moon Lake'), msg('Star Lake'), msg('Mirror Lake'), msg('Reflection Lake'),
-  msg('Tranquil Lake'), msg('Serene Lake'), msg('Peaceful Lake'), msg('Still Lake'), msg('Calm Lake'),
-  msg('Deep Lake'), msg('Shallow Lake'), msg('Hidden Lake'), msg('Secret Lake'), msg('Lost Lake'),
-  msg('Wild Lake'), msg('Bear Lake'), msg('Eagle Lake'), msg('Deer Lake'), msg('Wolf Lake'),
-  msg('Trout Lake'), msg('Bass Lake'), msg('Salmon Lake'), msg('Perch Lake'), msg('Pike Lake'),
-  msg('Lily Lake'), msg('Lotus Lake'), msg('Willow Lake'), msg('Oak Lake'), msg('Maple Lake'),
-  msg('Cedar Lake'), msg('Birch Lake'), msg('Spruce Lake'), msg('Fir Lake'),
-  msg('Misty Lake'), msg('Foggy Lake'), msg('Cloudy Lake'), msg('Bright Lake'), msg('Shimmer Lake'),
-  msg('Sparkle Lake'), msg('Glitter Lake'), msg('Diamond Lake'), msg('Pearl Lake'), msg('Jade Lake'),
+  'Pine Lake', 'Crystal Lake', 'Emerald Lake', 'Blue Lake', 'Clear Lake',
+  'Silver Lake', 'Golden Lake', 'Mountain Lake', 'Forest Lake', 'Sunset Lake',
+  'Sunrise Lake', 'Moon Lake', 'Star Lake', 'Mirror Lake', 'Reflection Lake',
+  'Tranquil Lake', 'Serene Lake', 'Peaceful Lake', 'Still Lake', 'Calm Lake',
+  'Deep Lake', 'Shallow Lake', 'Hidden Lake', 'Secret Lake', 'Lost Lake',
+  'Wild Lake', 'Bear Lake', 'Eagle Lake', 'Deer Lake', 'Wolf Lake',
+  'Trout Lake', 'Bass Lake', 'Salmon Lake', 'Perch Lake', 'Pike Lake',
+  'Lily Lake', 'Lotus Lake', 'Willow Lake', 'Oak Lake', 'Maple Lake',
+  'Cedar Lake', 'Birch Lake', 'Spruce Lake', 'Fir Lake',
+  'Misty Lake', 'Foggy Lake', 'Cloudy Lake', 'Bright Lake', 'Shimmer Lake',
+  'Sparkle Lake', 'Glitter Lake', 'Diamond Lake', 'Pearl Lake', 'Jade Lake',
 ];
 
 const OCEAN_NAMES = [
-  msg('Pacific Ocean'), msg('Atlantic Ocean'), msg('Arctic Ocean'), msg('Indian Ocean'),
-  msg('Southern Ocean'), msg('Mediterranean Sea'), msg('Caribbean Sea'), msg('North Sea'),
-  msg('Baltic Sea'), msg('Black Sea'), msg('Red Sea'), msg('Caspian Sea'), msg('Aral Sea'),
-  msg('Bering Sea'), msg('Sea of Japan'), msg('East China Sea'), msg('South China Sea'),
-  msg('Yellow Sea'), msg('Philippine Sea'), msg('Coral Sea'), msg('Tasman Sea'), msg('Arabian Sea'),
-  msg('Bay of Bengal'), msg('Gulf of Mexico'), msg('Persian Gulf'), msg('Gulf of Alaska'),
-  msg('Hudson Bay'), msg('Baffin Bay'), msg('Davis Strait'), msg('Denmark Strait'),
-  msg('Great Bay'), msg('Grand Bay'), msg('Royal Bay'), msg('Majestic Bay'), msg('Noble Bay'),
-  msg('Ancient Sea'), msg('Eternal Sea'), msg('Endless Sea'), msg('Boundless Sea'), msg('Vast Sea'),
-  msg('Infinite Sea'), msg('Crystal Sea'), msg('Emerald Sea'), msg('Sapphire Sea'), msg('Azure Sea'),
-  msg('Turquoise Sea'), msg('Northern Sea'), msg('Southern Sea'), msg('Eastern Sea'), msg('Western Sea'),
+  'Pacific Ocean', 'Atlantic Ocean', 'Arctic Ocean', 'Indian Ocean',
+  'Southern Ocean', 'Mediterranean Sea', 'Caribbean Sea', 'North Sea',
+  'Baltic Sea', 'Black Sea', 'Red Sea', 'Caspian Sea', 'Aral Sea',
+  'Bering Sea', 'Sea of Japan', 'East China Sea', 'South China Sea',
+  'Yellow Sea', 'Philippine Sea', 'Coral Sea', 'Tasman Sea', 'Arabian Sea',
+  'Bay of Bengal', 'Gulf of Mexico', 'Persian Gulf', 'Gulf of Alaska',
+  'Hudson Bay', 'Baffin Bay', 'Davis Strait', 'Denmark Strait',
+  'Great Bay', 'Grand Bay', 'Royal Bay', 'Majestic Bay', 'Noble Bay',
+  'Ancient Sea', 'Eternal Sea', 'Endless Sea', 'Boundless Sea', 'Vast Sea',
+  'Infinite Sea', 'Crystal Sea', 'Emerald Sea', 'Sapphire Sea', 'Azure Sea',
+  'Turquoise Sea', 'Northern Sea', 'Southern Sea', 'Eastern Sea', 'Western Sea',
 ];
 
 export function generateCityName(): string {

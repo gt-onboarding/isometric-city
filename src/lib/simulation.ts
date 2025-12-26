@@ -21,7 +21,6 @@ import {
 } from '@/types/game';
 import { generateCityName, generateWaterName } from './names';
 import { isMobile } from 'react-device-detect';
-import { msg } from 'gt-next';
 
 // Default grid size for new games
 export const DEFAULT_GRID_SIZE = isMobile ? 50 : 70;
@@ -735,14 +734,14 @@ function createBuilding(type: BuildingType): Building {
 
 function createInitialBudget(): Budget {
   return {
-    police: { name: msg('Police'), funding: 100, cost: 0 },
-    fire: { name: msg('Fire'), funding: 100, cost: 0 },
-    health: { name: msg('Health'), funding: 100, cost: 0 },
-    education: { name: msg('Education'), funding: 100, cost: 0 },
-    transportation: { name: msg('Transportation'), funding: 100, cost: 0 },
-    parks: { name: msg('Parks'), funding: 100, cost: 0 },
-    power: { name: msg('Power'), funding: 100, cost: 0 },
-    water: { name: msg('Water'), funding: 100, cost: 0 },
+    police: { name: 'Police', funding: 100, cost: 0 },
+    fire: { name: 'Fire', funding: 100, cost: 0 },
+    health: { name: 'Health', funding: 100, cost: 0 },
+    education: { name: 'Education', funding: 100, cost: 0 },
+    transportation: { name: 'Transportation', funding: 100, cost: 0 },
+    parks: { name: 'Parks', funding: 100, cost: 0 },
+    power: { name: 'Power', funding: 100, cost: 0 },
+    water: { name: 'Water', funding: 100, cost: 0 },
   };
 }
 

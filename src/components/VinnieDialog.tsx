@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useGame } from '@/context/GameContext';
-import { useGT } from 'gt-next';
 
 interface VinnieDialogProps {
   open: boolean;
@@ -19,14 +18,13 @@ interface VinnieDialogProps {
 }
 
 export function VinnieDialog({ open, onOpenChange }: VinnieDialogProps) {
-  const gt = useGT();
   const { addMoney, addNotification } = useGame();
 
   const handleAccept = () => {
     addMoney(100000);
     addNotification(
-      gt('Questionable Finances'),
-      gt('You received $100,000 from Cousin Vinnie. Your accountants are... concerned.'),
+      'Questionable Finances',
+      'You received $100,000 from Cousin Vinnie. Your accountants are... concerned.',
       'disaster'
     );
     onOpenChange(false);
@@ -35,8 +33,8 @@ export function VinnieDialog({ open, onOpenChange }: VinnieDialogProps) {
   const handleDecline = () => {
     addMoney(10000);
     addNotification(
-      gt('Integrity Bonus'),
-      gt("You declined Vinnie's offer. A mysterious benefactor rewards your honesty with $10,000."),
+      'Integrity Bonus',
+      'You declined Vinnie\'s offer. A mysterious benefactor rewards your honesty with $10,000.',
       'trophy'
     );
     onOpenChange(false);
@@ -46,17 +44,17 @@ export function VinnieDialog({ open, onOpenChange }: VinnieDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-slate-900 border-slate-700 text-slate-100">
         <DialogHeader>
-          <DialogTitle className="text-sky-400">{gt('A Shady Offer')}</DialogTitle>
+          <DialogTitle className="text-sky-400">A Shady Offer</DialogTitle>
           <DialogDescription asChild>
             <div className="text-slate-300 pt-2">
               <p className="mb-2">
-                {gt('Hey there, Mayor... My associate Vinnie heard you could use some help with the city budget.')}
+                Hey there, Mayor... My associate Vinnie heard you could use some help with the city budget.
               </p>
               <p className="mb-2">
-                {gt("He's offering $100,000... no strings attached.")}
+                He&apos;s offering <span className="text-green-400 font-semibold">$100,000</span>... no strings attached.
               </p>
               <p className="text-slate-400 italic">
-                {gt('Well, maybe a few strings.')}
+                Well, maybe a few strings.
               </p>
             </div>
           </DialogDescription>
@@ -67,13 +65,13 @@ export function VinnieDialog({ open, onOpenChange }: VinnieDialogProps) {
             onClick={handleDecline}
             className="border-slate-600 text-slate-200 hover:bg-slate-800"
           >
-            {gt('Decline')}
+            Decline
           </Button>
           <Button
             onClick={handleAccept}
             className="bg-blue-600 hover:bg-blue-700 text-white"
           >
-            {gt('Accept Offer')}
+            Accept Offer
           </Button>
         </DialogFooter>
       </DialogContent>

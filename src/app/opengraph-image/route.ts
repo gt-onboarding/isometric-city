@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import path from 'path';
-import { msg } from 'gt-next';
 
 export async function GET() {
   try {
@@ -19,6 +18,6 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Error serving OG image:', error);
-    return new NextResponse(msg('Image not found'), { status: 404 });
+    return new NextResponse('Image not found', { status: 404 });
   }
 }

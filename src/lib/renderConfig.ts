@@ -1,5 +1,4 @@
 // Rendering configuration
-import { msg } from 'gt-next';
 // ============================================================================
 // SPRITE PACK TYPE DEFINITION
 // ============================================================================
@@ -142,7 +141,7 @@ export interface SpritePack {
 // ============================================================================
 const SPRITE_PACK_SPRITES4: SpritePack = {
   id: 'sprites4',
-  name: msg('Default Theme'),
+  name: 'Default Theme',
   src: '/assets/sprites_red_water_new.png',
   constructionSrc: '/assets/sprites_red_water_new_construction.png',
   abandonedSrc: '/assets/sprites_red_water_new_abandoned.png',
@@ -552,7 +551,7 @@ const SPRITE_PACK_SPRITES4: SpritePack = {
 const SPRITE_PACK_SPRITES4_HARRY: SpritePack = {
   ...SPRITE_PACK_SPRITES4,
   id: 'sprites4-harry',
-  name: msg('Harry Potter Theme'),
+  name: 'Harry Potter Theme',
   src: '/assets/sprites_red_water_new_harry.png',
   denseSrc: '/assets/sprites_red_water_new_harry_dense.png',
   modernSrc: '/assets/sprites_red_water_new_harry_dense.png',
@@ -571,7 +570,7 @@ const SPRITE_PACK_SPRITES4_HARRY: SpritePack = {
 const SPRITE_PACK_SPRITES4_CHINA: SpritePack = {
   ...SPRITE_PACK_SPRITES4,
   id: 'sprites4-china',
-  name: msg('Chinese Theme'),
+  name: 'Chinese Theme',
   src: '/assets/sprites_red_water_new_china.png',
   // Note: Uses same construction, abandoned, dense, and parks sheets as the default
   // If you have Chinese themed variants for those, update these paths:
