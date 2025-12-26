@@ -28,7 +28,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { LocaleSelector } from 'gt-next';
+import { LocaleSelector, useGT } from 'gt-next';
 
 // Sun/Moon icon for time of day
 function TimeOfDayIcon({ hour }: { hour: number }) {
@@ -74,17 +74,18 @@ function DemandBar({ label, demand, color }: { label: string; demand: number; co
   );
 }
 
-export function MobileTopBar({ 
-  selectedTile, 
-  services, 
+export function MobileTopBar({
+  selectedTile,
+  services,
   onCloseTile,
   onExit,
-}: { 
+}: {
   selectedTile: Tile | null;
   services: { police: number[][]; fire: number[][]; health: number[][]; education: number[][]; power: boolean[][]; water: boolean[][] };
   onCloseTile: () => void;
   onExit?: () => void;
 }) {
+  const gt = useGT();
   const { state, setSpeed, setTaxRate, isSaving, visualHour, saveCity } = useGame();
   const { stats, year, month, speed, taxRate, cityName } = state;
   const [showDetails, setShowDetails] = useState(false);
@@ -102,7 +103,20 @@ export function MobileTopBar({
     onExit?.();
   }, [onExit]);
 
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const monthNames = [
+    gt('Jan'),
+    gt('Feb'),
+    gt('Mar'),
+    gt('Apr'),
+    gt('May'),
+    gt('Jun'),
+    gt('Jul'),
+    gt('Aug'),
+    gt('Sep'),
+    gt('Oct'),
+    gt('Nov'),
+    gt('Dec')
+  ];
 
   return (
     <>
@@ -131,13 +145,13 @@ export function MobileTopBar({
               <span className="text-xs font-mono font-semibold text-foreground">
                 {stats.population >= 1000 ? `${(stats.population / 1000).toFixed(1)}k` : stats.population}
               </span>
-              <span className="text-[9px] text-muted-foreground">Pop</span>
+              <span className="text-[9px] text-muted-foreground">{gt('Pop')}</span>
             </div>
             <div className="flex flex-col items-start">
               <span className={`text-xs font-mono font-semibold ${stats.money < 0 ? 'text-red-500' : stats.money < 1000 ? 'text-amber-500' : 'text-green-500'}`}>
                 ${stats.money >= 1000000 ? `${(stats.money / 1000000).toFixed(1)}M` : stats.money >= 1000 ? `${(stats.money / 1000).toFixed(0)}k` : stats.money}
               </span>
-              <span className="text-[9px] text-muted-foreground">Funds</span>
+              <span className="text-[9px] text-muted-foreground">{gt('Funds')}</span>
             </div>
           </button>
 
@@ -233,7 +247,7 @@ export function MobileTopBar({
               }
             }}
           >
-            <span className="text-[9px] text-muted-foreground">Tax</span>
+            <span className="text-[9px] text-muted-foreground">{gt('Tax')}</span>
             <span className="text-[10px] font-mono text-foreground">{taxRate}%</span>
           </button>
 
@@ -247,7 +261,7 @@ export function MobileTopBar({
         {/* Tax Slider Row */}
         {showTaxSlider && !selectedTile && (
           <div className="border-t border-sidebar-border/50 bg-secondary/30 px-3 py-0.5 flex items-center gap-2 text-[10px]">
-            <span className="text-muted-foreground whitespace-nowrap">Tax Rate</span>
+            <span className="text-muted-foreground whitespace-nowrap">{gt('Tax Rate')}</span>
             <Slider
               value={[taxRate]}
               onValueChange={(value) => setTaxRate(value[0])}
@@ -277,8 +291,8 @@ export function MobileTopBar({
                 selectedTile.zone === 'industrial' ? 'bg-amber-500' : 'bg-muted-foreground/40'
               }`} />
               <span className="text-xs font-medium text-foreground capitalize">
-                {selectedTile.building.type === 'empty' 
-                  ? (selectedTile.zone === 'none' ? 'Empty Lot' : `${selectedTile.zone} Zone`)
+                {selectedTile.building.type === 'empty'
+                  ? (selectedTile.zone === 'none' ? gt('Empty Lot') : gt('{zone} Zone', { zone: selectedTile.zone }))
                   : selectedTile.building.type.replace(/_/g, ' ')}
               </span>
             </div>
@@ -291,15 +305,15 @@ export function MobileTopBar({
               </div>
             )}
             {selectedTile.building.jobs > 0 && (
-              <span className="text-foreground font-mono shrink-0">{selectedTile.building.jobs} jobs</span>
+              <span className="text-foreground font-mono shrink-0">{gt('{count} jobs', { count: selectedTile.building.jobs })}</span>
             )}
-            
+
             {/* Utilities */}
             <span className={`shrink-0 ${selectedTile.building.powered ? 'text-yellow-400' : 'text-muted-foreground/60'}`}>
-              {selectedTile.building.powered ? 'Has power' : 'No power'}
+              {selectedTile.building.powered ? gt('Has power') : gt('No power')}
             </span>
             <span className={`shrink-0 ${selectedTile.building.watered ? 'text-cyan-400' : 'text-muted-foreground/60'}`}>
-              {selectedTile.building.watered ? 'Has water' : 'No water'}
+              {selectedTile.building.watered ? gt('Has water') : gt('No water')}
             </span>
             
             {/* Land value */}
@@ -350,31 +364,31 @@ export function MobileTopBar({
             <div className="p-4 grid grid-cols-5 gap-3">
               <StatItem
                 icon={<HappyIcon size={16} />}
-                label="Happiness"
+                label={gt('Happiness')}
                 value={stats.happiness}
                 color={stats.happiness >= 70 ? 'text-green-500' : stats.happiness >= 40 ? 'text-amber-500' : 'text-red-500'}
               />
               <StatItem
                 icon={<HealthIcon size={16} />}
-                label="Health"
+                label={gt('Health')}
                 value={stats.health}
                 color={stats.health >= 70 ? 'text-green-500' : stats.health >= 40 ? 'text-amber-500' : 'text-red-500'}
               />
               <StatItem
                 icon={<EducationIcon size={16} />}
-                label="Education"
+                label={gt('Education')}
                 value={stats.education}
                 color={stats.education >= 70 ? 'text-green-500' : stats.education >= 40 ? 'text-amber-500' : 'text-red-500'}
               />
               <StatItem
                 icon={<SafetyIcon size={16} />}
-                label="Safety"
+                label={gt('Safety')}
                 value={stats.safety}
                 color={stats.safety >= 70 ? 'text-green-500' : stats.safety >= 40 ? 'text-amber-500' : 'text-red-500'}
               />
               <StatItem
                 icon={<EnvironmentIcon size={16} />}
-                label="Environ"
+                label={gt('Environ')}
                 value={stats.environment}
                 color={stats.environment >= 70 ? 'text-green-500' : stats.environment >= 40 ? 'text-amber-500' : 'text-red-500'}
               />
@@ -385,23 +399,23 @@ export function MobileTopBar({
             {/* Detailed finances */}
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Population</span>
+                <span className="text-sm text-muted-foreground">{gt('Population')}</span>
                 <span className="text-sm font-mono text-foreground">{stats.population.toLocaleString()}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Jobs</span>
+                <span className="text-sm text-muted-foreground">{gt('Jobs')}</span>
                 <span className="text-sm font-mono text-foreground">{stats.jobs.toLocaleString()}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Monthly Income</span>
+                <span className="text-sm text-muted-foreground">{gt('Monthly Income')}</span>
                 <span className="text-sm font-mono text-green-400">${stats.income.toLocaleString()}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Monthly Expenses</span>
+                <span className="text-sm text-muted-foreground">{gt('Monthly Expenses')}</span>
                 <span className="text-sm font-mono text-red-400">${stats.expenses.toLocaleString()}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Weekly Net</span>
+                <span className="text-sm text-muted-foreground">{gt('Weekly Net')}</span>
                 <span className={`text-sm font-mono ${stats.income - stats.expenses >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                   ${Math.floor((stats.income - stats.expenses) / 4).toLocaleString()}
                 </span>
@@ -413,7 +427,7 @@ export function MobileTopBar({
             {/* Tax slider */}
             <div className="p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-muted-foreground">Tax Rate</span>
+                <span className="text-sm text-muted-foreground">{gt('Tax Rate')}</span>
                 <span className="text-sm font-mono text-foreground">{taxRate}%</span>
               </div>
               <Slider
@@ -437,9 +451,9 @@ export function MobileTopBar({
       <Dialog open={showExitDialog} onOpenChange={setShowExitDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Exit to Main Menu</DialogTitle>
+            <DialogTitle>{gt('Exit to Main Menu')}</DialogTitle>
             <DialogDescription>
-              Would you like to save your city before exiting?
+              {gt('Would you like to save your city before exiting?')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex-col sm:flex-row gap-2">
@@ -448,13 +462,13 @@ export function MobileTopBar({
               onClick={handleExitWithoutSaving}
               className="w-full sm:w-auto"
             >
-              Exit Without Saving
+              {gt('Exit Without Saving')}
             </Button>
             <Button
               onClick={handleSaveAndExit}
               className="w-full sm:w-auto"
             >
-              Save & Exit
+              {gt('Save & Exit')}
             </Button>
           </DialogFooter>
         </DialogContent>

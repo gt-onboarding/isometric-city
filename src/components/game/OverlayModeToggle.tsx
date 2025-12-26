@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/Icons';
 import { OverlayMode } from './types';
 import { OVERLAY_CONFIG, getOverlayButtonClass } from './overlays';
+import { useMessages, useGT } from 'gt-next';
 
 // ============================================================================
 // Types
@@ -54,10 +55,13 @@ export const OverlayModeToggle = React.memo(function OverlayModeToggle({
   overlayMode,
   setOverlayMode,
 }: OverlayModeToggleProps) {
+  const m = useMessages();
+  const gt = useGT();
+
   return (
     <Card className="absolute bottom-4 left-4 p-2 shadow-lg bg-card/90 border-border/70 z-50">
       <div className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground font-semibold mb-2">
-        View Overlay
+        {gt('View Overlay')}
       </div>
       <div className="flex gap-1">
         {(Object.keys(OVERLAY_CONFIG) as OverlayMode[]).map((mode) => {
@@ -71,7 +75,7 @@ export const OverlayModeToggle = React.memo(function OverlayModeToggle({
               size="sm"
               onClick={() => setOverlayMode(mode)}
               className={`h-8 px-3 ${getOverlayButtonClass(mode, isActive)}`}
-              title={config.title}
+              title={m(config.title)}
             >
               {OVERLAY_ICONS[mode]}
             </Button>

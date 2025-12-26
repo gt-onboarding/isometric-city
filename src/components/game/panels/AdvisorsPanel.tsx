@@ -18,6 +18,7 @@ import {
   EnvironmentIcon,
   JobsIcon,
 } from '@/components/ui/Icons';
+import { T, Var, useMessages } from 'gt-next';
 
 const ADVISOR_ICON_MAP: Record<string, React.ReactNode> = {
   power: <PowerIcon size={18} />,
@@ -32,9 +33,10 @@ const ADVISOR_ICON_MAP: Record<string, React.ReactNode> = {
 };
 
 export function AdvisorsPanel() {
+  const m = useMessages();
   const { state, setActivePanel } = useGame();
   const { advisorMessages, stats } = state;
-  
+
   const avgRating = (stats.happiness + stats.health + stats.education + stats.safety + stats.environment) / 5;
   const grade = avgRating >= 90 ? 'A+' : avgRating >= 80 ? 'A' : avgRating >= 70 ? 'B' : avgRating >= 60 ? 'C' : avgRating >= 50 ? 'D' : 'F';
   const gradeColor = avgRating >= 70 ? 'text-green-400' : avgRating >= 50 ? 'text-amber-400' : 'text-red-400';
@@ -43,29 +45,39 @@ export function AdvisorsPanel() {
     <Dialog open={true} onOpenChange={() => setActivePanel('none')}>
       <DialogContent className="max-w-[500px] max-h-[600px]">
         <DialogHeader>
-          <DialogTitle>City Advisors</DialogTitle>
+          <T>
+            <DialogTitle>City Advisors</DialogTitle>
+          </T>
         </DialogHeader>
-        
+
         <div className="space-y-4">
           <Card className="flex items-center gap-4 p-4 bg-primary/10 border-primary/30">
-            <div 
+            <div
               className={`w-16 h-16 flex items-center justify-center text-3xl font-black rounded-md ${gradeColor} bg-primary/20`}
             >
               {grade}
             </div>
             <div>
-              <div className="text-foreground font-semibold">Overall City Rating</div>
-              <div className="text-muted-foreground text-sm">Based on happiness, health, education, safety & environment</div>
+              <T>
+                <div className="text-foreground font-semibold">Overall City Rating</div>
+              </T>
+              <T>
+                <div className="text-muted-foreground text-sm">Based on happiness, health, education, safety & environment</div>
+              </T>
             </div>
           </Card>
-          
+
           <ScrollArea className="max-h-[350px]">
             <div className="space-y-3">
               {advisorMessages.length === 0 ? (
                 <Card className="text-center py-8 text-muted-foreground bg-primary/10 border-primary/30">
                   <AdvisorIcon size={32} className="mx-auto mb-3 opacity-50" />
-                  <div className="text-sm">No urgent issues to report!</div>
-                  <div className="text-xs mt-1">Your city is running smoothly.</div>
+                  <T>
+                    <div className="text-sm">No urgent issues to report!</div>
+                  </T>
+                  <T>
+                    <div className="text-xs mt-1">Your city is running smoothly.</div>
+                  </T>
                 </Card>
               ) : (
                 advisorMessages.map((advisor, i) => (
@@ -78,19 +90,29 @@ export function AdvisorsPanel() {
                       <span className="text-lg text-muted-foreground">
                         {ADVISOR_ICON_MAP[advisor.icon] || <InfoIcon size={18} />}
                       </span>
-                      <span className="text-foreground font-medium text-sm">{advisor.name}</span>
-                      <Badge 
+                      <span className="text-foreground font-medium text-sm">
+                        <T>
+                          <Var>{m(advisor.name)}</Var>
+                        </T>
+                      </span>
+                      <Badge
                         variant={
                           advisor.priority === 'critical' ? 'destructive' :
                           advisor.priority === 'high' ? 'destructive' : 'secondary'
                         }
                         className="ml-auto text-[10px]"
                       >
-                        {advisor.priority}
+                        <T>
+                          <Var>{m(advisor.priority)}</Var>
+                        </T>
                       </Badge>
                     </div>
                     {advisor.messages.map((msg, j) => (
-                      <div key={j} className="text-muted-foreground text-sm leading-relaxed">{msg}</div>
+                      <div key={j} className="text-muted-foreground text-sm leading-relaxed">
+                        <T>
+                          <Var>{m(msg)}</Var>
+                        </T>
+                      </div>
                     ))}
                   </Card>
                 ))
