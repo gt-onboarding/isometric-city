@@ -7,7 +7,7 @@ import Game from '@/components/Game';
 import { useMobile } from '@/hooks/useMobile';
 import { getSpritePack, getSpriteCoords, DEFAULT_SPRITE_PACK_ID } from '@/lib/renderConfig';
 import { SavedCityMeta } from '@/types/game';
-import { T, useGT } from 'gt-next';
+import { LocaleSelector, T, useGT } from 'gt-next';
 
 const STORAGE_KEY = 'isocity-game-state';
 const SAVED_CITIES_INDEX_KEY = 'isocity-saved-cities-index';
@@ -342,6 +342,7 @@ export default function HomePage() {
               Open GitHub
             </a>
           </T>
+          <LocaleSelector style={{ backgroundColor: 'transparent' }} />
         </div>
 
         {/* Saved Cities */}
@@ -411,6 +412,7 @@ export default function HomePage() {
                 Open GitHub
               </a>
             </T>
+            <LocaleSelector style={{ backgroundColor: 'transparent' }} />
           </div>
 
           {/* Saved Cities */}
