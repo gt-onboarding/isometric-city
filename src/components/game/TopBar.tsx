@@ -18,6 +18,7 @@ import {
   CheckIcon,
 } from '@/components/ui/Icons';
 import { copyShareUrl } from '@/lib/shareState';
+import { LocaleSelector, T, useGT } from 'gt-next';
 
 // ============================================================================
 // TIME OF DAY ICON
@@ -67,10 +68,10 @@ interface StatBadgeProps {
 }
 
 export function StatBadge({ value, label, variant = 'default' }: StatBadgeProps) {
-  const colorClass = variant === 'success' ? 'text-green-500' : 
-                     variant === 'warning' ? 'text-amber-500' : 
+  const colorClass = variant === 'success' ? 'text-green-500' :
+                     variant === 'warning' ? 'text-amber-500' :
                      variant === 'destructive' ? 'text-red-500' : 'text-foreground';
-  
+
   return (
     <div className="flex flex-col items-start min-w-[70px]">
       <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-0.5">{label}</div>
@@ -92,7 +93,7 @@ interface DemandIndicatorProps {
 export function DemandIndicator({ label, demand, color }: DemandIndicatorProps) {
   const height = Math.abs(demand) / 2;
   const isPositive = demand >= 0;
-  
+
   return (
     <div className="flex flex-col items-center gap-1">
       <span className={`text-[10px] font-bold ${color}`}>{label}</span>
@@ -138,14 +139,15 @@ export function MiniStat({ icon, label, value }: MiniStatProps) {
 export const StatsPanel = React.memo(function StatsPanel() {
   const { state } = useGame();
   const { stats } = state;
-  
+  const gt = useGT();
+
   return (
     <div className="h-8 bg-secondary/50 border-b border-border flex items-center justify-center gap-8 text-xs">
-      <MiniStat icon={<HappyIcon size={12} />} label="Happiness" value={stats.happiness} />
-      <MiniStat icon={<HealthIcon size={12} />} label="Health" value={stats.health} />
-      <MiniStat icon={<EducationIcon size={12} />} label="Education" value={stats.education} />
-      <MiniStat icon={<SafetyIcon size={12} />} label="Safety" value={stats.safety} />
-      <MiniStat icon={<EnvironmentIcon size={12} />} label="Environment" value={stats.environment} />
+      <MiniStat icon={<HappyIcon size={12} />} label={gt('Happiness')} value={stats.happiness} />
+      <MiniStat icon={<HealthIcon size={12} />} label={gt('Health')} value={stats.health} />
+      <MiniStat icon={<EducationIcon size={12} />} label={gt('Education')} value={stats.education} />
+      <MiniStat icon={<SafetyIcon size={12} />} label={gt('Safety')} value={stats.safety} />
+      <MiniStat icon={<EnvironmentIcon size={12} />} label={gt('Environment')} value={stats.environment} />
     </div>
   );
 });
@@ -157,8 +159,9 @@ export const StatsPanel = React.memo(function StatsPanel() {
 export const TopBar = React.memo(function TopBar() {
   const { state, setSpeed, setTaxRate, isSaving, visualHour } = useGame();
   const { stats, year, month, day, speed, taxRate, cityName } = state;
-  
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const gt = useGT();
+
+  const monthNames = [gt('Jan'), gt('Feb'), gt('Mar'), gt('Apr'), gt('May'), gt('Jun'), gt('Jul'), gt('Aug'), gt('Sep'), gt('Oct'), gt('Nov'), gt('Dec')];
   const formattedDate = `${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}-${year}`;
   
   return (
@@ -168,7 +171,9 @@ export const TopBar = React.memo(function TopBar() {
           <div className="flex items-center gap-2">
             <h1 className="text-foreground font-semibold text-sm">{cityName}</h1>
             {isSaving && (
-              <span className="text-muted-foreground text-xs italic animate-pulse">Saving...</span>
+              <T>
+                <span className="text-muted-foreground text-xs italic animate-pulse">Saving...</span>
+              </T>
             )}
           </div>
           <div className="flex items-center gap-2 text-muted-foreground text-xs font-mono tabular-nums">
@@ -192,10 +197,10 @@ export const TopBar = React.memo(function TopBar() {
               variant={speed === s ? 'default' : 'ghost'}
               size="icon-sm"
               className="h-7 w-7 p-0 m-0"
-              title={s === 0 ? 'Pause' : s === 1 ? 'Normal' : s === 2 ? 'Fast' : 'Very Fast'}
+              title={s === 0 ? gt('Pause') : s === 1 ? gt('Normal') : s === 2 ? gt('Fast') : gt('Very Fast')}
             >
-              {s === 0 ? <PauseIcon size={12} /> : 
-               s === 1 ? <PlayIcon size={12} /> : 
+              {s === 0 ? <PauseIcon size={12} /> :
+               s === 1 ? <PlayIcon size={12} /> :
                s === 2 ? (
                  <div className="flex items-center -space-x-[5px]">
                    <PlayIcon size={12} />
@@ -213,32 +218,34 @@ export const TopBar = React.memo(function TopBar() {
       </div>
       
       <div className="flex items-center gap-8">
-        <StatBadge value={stats.population.toLocaleString()} label="Population" />
-        <StatBadge value={stats.jobs.toLocaleString()} label="Jobs" />
-        <StatBadge 
-          value={`$${stats.money.toLocaleString()}`} 
-          label="Funds"
+        <StatBadge value={stats.population.toLocaleString()} label={gt('Population')} />
+        <StatBadge value={stats.jobs.toLocaleString()} label={gt('Jobs')} />
+        <StatBadge
+          value={`$${stats.money.toLocaleString()}`}
+          label={gt('Funds')}
           variant={stats.money < 0 ? 'destructive' : stats.money < 1000 ? 'warning' : 'success'}
         />
         <Separator orientation="vertical" className="h-8" />
-        <StatBadge 
-          value={`$${(stats.income - stats.expenses).toLocaleString()}`} 
-          label="Monthly"
+        <StatBadge
+          value={`$${(stats.income - stats.expenses).toLocaleString()}`}
+          label={gt('Monthly')}
           variant={stats.income - stats.expenses >= 0 ? 'success' : 'destructive'}
         />
       </div>
       
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
-          <DemandIndicator label="R" demand={stats.demand.residential} color="text-green-500" />
-          <DemandIndicator label="C" demand={stats.demand.commercial} color="text-blue-500" />
-          <DemandIndicator label="I" demand={stats.demand.industrial} color="text-amber-500" />
+          <DemandIndicator label={gt('R', { $context: 'Residential zone abbreviation' })} demand={stats.demand.residential} color="text-green-500" />
+          <DemandIndicator label={gt('C', { $context: 'Commercial zone abbreviation' })} demand={stats.demand.commercial} color="text-blue-500" />
+          <DemandIndicator label={gt('I', { $context: 'Industrial zone abbreviation' })} demand={stats.demand.industrial} color="text-amber-500" />
         </div>
-        
+
         <Separator orientation="vertical" className="h-8" />
-        
+
         <div className="flex items-center gap-2">
-          <span className="text-muted-foreground text-xs">Tax</span>
+          <T>
+            <span className="text-muted-foreground text-xs">Tax</span>
+          </T>
           <Slider
             value={[taxRate]}
             onValueChange={(value) => setTaxRate(value[0])}
@@ -249,6 +256,10 @@ export const TopBar = React.memo(function TopBar() {
           />
           <span className="text-foreground text-xs font-mono tabular-nums w-8">{taxRate}%</span>
         </div>
+
+        <Separator orientation="vertical" className="h-8" />
+
+        <LocaleSelector style={{ backgroundColor: 'transparent' }} />
       </div>
     </div>
   );

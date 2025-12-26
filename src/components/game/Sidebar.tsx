@@ -20,6 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { T, useGT, msg, useMessages } from 'gt-next';
 
 // Hover Submenu Component for collapsible tool categories
 // Implements triangle-rule safe zone for forgiving cursor navigation
@@ -38,6 +39,7 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
   onSelectTool: (tool: Tool) => void;
   forceOpenUpward?: boolean;
 }) {
+  const m = useMessages();
   const [isOpen, setIsOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0, buttonHeight: 0, openUpward: false });
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -210,9 +212,9 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
                   className={`w-full justify-start gap-2 px-3 py-2 h-auto text-sm transition-all duration-150 ${
                     isSelected ? 'bg-primary text-primary-foreground shadow-sm' : 'hover:bg-muted/60'
                   }`}
-                  title={`${info.description} - Cost: $${info.cost.toLocaleString()}`}
+                  title={`${m(info.description)} - Cost: $${info.cost.toLocaleString()}`}
                 >
-                  <span className="flex-1 text-left truncate">{info.name}</span>
+                  <span className="flex-1 text-left truncate">{m(info.name)}</span>
                   <span className={`text-xs ${isSelected ? 'opacity-80' : 'opacity-50'}`}>${info.cost.toLocaleString()}</span>
                 </Button>
               );
@@ -225,13 +227,13 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
 });
 
 // Exit confirmation dialog component
-function ExitDialog({ 
-  open, 
-  onOpenChange, 
-  onSaveAndExit, 
-  onExitWithoutSaving 
-}: { 
-  open: boolean; 
+function ExitDialog({
+  open,
+  onOpenChange,
+  onSaveAndExit,
+  onExitWithoutSaving
+}: {
+  open: boolean;
   onOpenChange: (open: boolean) => void;
   onSaveAndExit: () => void;
   onExitWithoutSaving: () => void;
@@ -240,97 +242,130 @@ function ExitDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Exit to Main Menu</DialogTitle>
-          <DialogDescription>
-            Would you like to save your city before exiting?
-          </DialogDescription>
+          <T>
+            <DialogTitle>Exit to Main Menu</DialogTitle>
+            <DialogDescription>
+              Would you like to save your city before exiting?
+            </DialogDescription>
+          </T>
         </DialogHeader>
         <DialogFooter className="flex-col sm:flex-row gap-2">
-          <Button
-            variant="outline"
-            onClick={onExitWithoutSaving}
-            className="w-full sm:w-auto"
-          >
-            Exit Without Saving
-          </Button>
-          <Button
-            onClick={onSaveAndExit}
-            className="w-full sm:w-auto"
-          >
-            Save & Exit
-          </Button>
+          <T>
+            <Button
+              variant="outline"
+              onClick={onExitWithoutSaving}
+              className="w-full sm:w-auto"
+            >
+              Exit Without Saving
+            </Button>
+          </T>
+          <T>
+            <Button
+              onClick={onSaveAndExit}
+              className="w-full sm:w-auto"
+            >
+              Save & Exit
+            </Button>
+          </T>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
 
+// Category label translations
+const CATEGORY_LABELS = {
+  TOOLS: msg('TOOLS'),
+  ZONES: msg('ZONES'),
+  BUILDINGS: msg('BUILDINGS'),
+};
+
+const SUBMENU_LABELS = {
+  zoning: msg('Zoning'),
+  services: msg('Services'),
+  parks: msg('Parks'),
+  sports: msg('Sports'),
+  waterfront: msg('Waterfront'),
+  community: msg('Community'),
+  utilities: msg('Utilities'),
+  special: msg('Special'),
+};
+
+const PANEL_LABELS = {
+  budget: msg('Budget'),
+  statistics: msg('Statistics'),
+  advisors: msg('Advisors'),
+  settings: msg('Settings'),
+};
+
 // Memoized Sidebar Component
 export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => void }) {
   const { state, setTool, setActivePanel, saveCity } = useGame();
   const { selectedTool, stats, activePanel } = state;
   const [showExitDialog, setShowExitDialog] = useState(false);
-  
+  const gt = useGT();
+  const m = useMessages();
+
   const handleSaveAndExit = useCallback(() => {
     saveCity();
     setShowExitDialog(false);
     onExit?.();
   }, [saveCity, onExit]);
-  
+
   const handleExitWithoutSaving = useCallback(() => {
     setShowExitDialog(false);
     onExit?.();
   }, [onExit]);
-  
+
   // Direct tool categories (shown inline)
   const directCategories = useMemo(() => ({
     'TOOLS': ['select', 'bulldoze', 'road', 'rail', 'subway'] as Tool[],
     'ZONES': ['zone_residential', 'zone_commercial', 'zone_industrial'] as Tool[],
   }), []);
-  
+
   // Zoning submenu (shown under ZONES section, before BUILDINGS)
   const zoningSubmenu = useMemo(() => ({
     key: 'zoning',
-    label: 'Zoning',
+    label: SUBMENU_LABELS.zoning,
     tools: ['zone_dezone', 'zone_water', 'zone_land'] as Tool[]
   }), []);
-  
+
   // Submenu categories (hover to expand) - includes all new assets from main
   const submenuCategories = useMemo(() => [
-    { 
-      key: 'services', 
-      label: 'Services', 
+    {
+      key: 'services',
+      label: SUBMENU_LABELS.services,
       tools: ['police_station', 'fire_station', 'hospital', 'school', 'university'] as Tool[]
     },
-    { 
-      key: 'parks', 
-      label: 'Parks', 
+    {
+      key: 'parks',
+      label: SUBMENU_LABELS.parks,
       tools: ['park', 'park_large', 'tennis', 'playground_small', 'playground_large', 'community_garden', 'pond_park', 'park_gate', 'greenhouse_garden', 'mini_golf_course', 'go_kart_track', 'amphitheater', 'roller_coaster_small', 'campground', 'cabin_house', 'mountain_lodge', 'mountain_trailhead'] as Tool[]
     },
-    { 
-      key: 'sports', 
-      label: 'Sports', 
+    {
+      key: 'sports',
+      label: SUBMENU_LABELS.sports,
       tools: ['basketball_courts', 'soccer_field_small', 'baseball_field_small', 'football_field', 'baseball_stadium', 'swimming_pool', 'skate_park', 'bleachers_field'] as Tool[]
     },
-    { 
-      key: 'waterfront', 
-      label: 'Waterfront', 
+    {
+      key: 'waterfront',
+      label: SUBMENU_LABELS.waterfront,
       tools: ['marina_docks_small', 'pier_large'] as Tool[]
     },
-    { 
-      key: 'community', 
-      label: 'Community', 
+    {
+      key: 'community',
+      label: SUBMENU_LABELS.community,
       tools: ['community_center', 'animal_pens_farm', 'office_building_small'] as Tool[]
     },
-    { 
-      key: 'utilities', 
-      label: 'Utilities', 
+    {
+      key: 'utilities',
+      label: SUBMENU_LABELS.utilities,
       tools: ['power_plant', 'water_tower', 'subway_station', 'rail_station'] as Tool[],
       forceOpenUpward: true
     },
-    { 
-      key: 'special', 
-      label: 'Special', 
+    {
+      key: 'special',
+      label: SUBMENU_LABELS.special,
       tools: ['stadium', 'museum', 'airport', 'space_program', 'city_hall', 'amusement_park'] as Tool[],
       forceOpenUpward: true
     },
@@ -346,13 +381,13 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
               variant="ghost"
               size="icon-sm"
               onClick={openCommandMenu}
-              title="Search (⌘K)"
+              title={gt('Search (⌘K)')}
               className="h-7 w-7 text-muted-foreground hover:text-sidebar-foreground"
             >
-              <svg 
-                className="w-4 h-4" 
-                fill="none" 
-                viewBox="0 0 24 24" 
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
                 stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -363,13 +398,13 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
                 variant="ghost"
                 size="icon-sm"
                 onClick={() => setShowExitDialog(true)}
-                title="Exit to Main Menu"
+                title={gt('Exit to Main Menu')}
                 className="h-7 w-7 text-muted-foreground hover:text-sidebar-foreground"
               >
-                <svg 
-                  className="w-4 h-4 -scale-x-100" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
+                <svg
+                  className="w-4 h-4 -scale-x-100"
+                  fill="none"
+                  viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -385,7 +420,7 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
         {Object.entries(directCategories).map(([category, tools]) => (
           <div key={category} className="mb-1">
             <div className="px-4 py-2 text-[10px] font-bold tracking-widest text-muted-foreground">
-              {category}
+              {m(CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS])}
             </div>
             <div className="px-2 flex flex-col gap-0.5">
               {tools.map(tool => {
@@ -403,9 +438,9 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
                     className={`w-full justify-start gap-3 px-3 py-2 h-auto text-sm ${
                       isSelected ? 'bg-primary text-primary-foreground' : ''
                     }`}
-                    title={`${info.description}${info.cost > 0 ? ` - Cost: $${info.cost}` : ''}`}
+                    title={`${m(info.description)}${info.cost > 0 ? ` - Cost: $${info.cost}` : ''}`}
                   >
-                    <span className="flex-1 text-left truncate">{info.name}</span>
+                    <span className="flex-1 text-left truncate">{m(info.name)}</span>
                     {info.cost > 0 && (
                       <span className="text-xs opacity-60">${info.cost}</span>
                     )}
@@ -416,7 +451,7 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
               {category === 'ZONES' && (
                 <HoverSubmenu
                   key={zoningSubmenu.key}
-                  label={zoningSubmenu.label}
+                  label={m(zoningSubmenu.label)}
                   tools={zoningSubmenu.tools}
                   selectedTool={selectedTool}
                   money={stats.money}
@@ -426,21 +461,21 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
             </div>
           </div>
         ))}
-        
+
         {/* Separator */}
         <div className="mx-4 my-2 h-px bg-sidebar-border/50" />
-        
+
         {/* Buildings header */}
         <div className="px-4 py-2 text-[10px] font-bold tracking-widest text-muted-foreground">
-          BUILDINGS
+          {m(CATEGORY_LABELS.BUILDINGS)}
         </div>
-        
+
         {/* Submenu categories */}
         <div className="px-2 flex flex-col gap-0.5">
           {submenuCategories.map(({ key, label, tools, forceOpenUpward }) => (
             <HoverSubmenu
               key={key}
-              label={label}
+              label={m(label)}
               tools={tools}
               selectedTool={selectedTool}
               money={stats.money}
@@ -454,10 +489,10 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
       <div className="border-t border-sidebar-border p-2">
         <div className="grid grid-cols-4 gap-1">
           {[
-            { panel: 'budget' as const, icon: <BudgetIcon size={16} />, label: 'Budget' },
-            { panel: 'statistics' as const, icon: <ChartIcon size={16} />, label: 'Statistics' },
-            { panel: 'advisors' as const, icon: <AdvisorIcon size={16} />, label: 'Advisors' },
-            { panel: 'settings' as const, icon: <SettingsIcon size={16} />, label: 'Settings' },
+            { panel: 'budget' as const, icon: <BudgetIcon size={16} />, label: PANEL_LABELS.budget },
+            { panel: 'statistics' as const, icon: <ChartIcon size={16} />, label: PANEL_LABELS.statistics },
+            { panel: 'advisors' as const, icon: <AdvisorIcon size={16} />, label: PANEL_LABELS.advisors },
+            { panel: 'settings' as const, icon: <SettingsIcon size={16} />, label: PANEL_LABELS.settings },
           ].map(({ panel, icon, label }) => (
             <Button
               key={panel}
@@ -465,7 +500,7 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
               variant={activePanel === panel ? 'default' : 'ghost'}
               size="icon-sm"
               className="w-full"
-              title={label}
+              title={m(label)}
             >
               {icon}
             </Button>
