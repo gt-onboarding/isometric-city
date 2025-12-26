@@ -6,6 +6,7 @@ import { TOOL_INFO, Tile, BuildingType, AdjacentCity, Tool } from '@/types/game'
 import { getBuildingSize, requiresWaterAdjacency, getWaterAdjacency, getRoadAdjacency } from '@/lib/simulation';
 import { FireIcon, SafetyIcon } from '@/components/ui/Icons';
 import { getSpriteCoords, BUILDING_TO_SPRITE, SPRITE_VERTICAL_OFFSETS, SPRITE_HORIZONTAL_OFFSETS, getActiveSpritePack } from '@/lib/renderConfig';
+import { T, Var, useGT } from 'gt-next';
 
 // Import shadcn components
 import { Button } from '@/components/ui/button';
@@ -127,6 +128,7 @@ export interface CanvasIsometricGridProps {
 
 // Canvas-based Isometric Grid - HIGH PERFORMANCE
 export function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile, isMobile = false, navigationTarget, onNavigationComplete, onViewportChange, onBargeDelivery }: CanvasIsometricGridProps) {
+  const gt = useGT();
   const { state, placeAtTile, connectToCity, checkAndDiscoverCities, currentSpritePack, visualHour } = useGame();
   const { grid, gridSize, selectedTool, speed, adjacentCities, waterBodies, gameVersion } = state;
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -4067,7 +4069,7 @@ export function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile
         // Find a discovered but not connected city in this direction
         const city = adjacentCities.find(c => c.direction === cityConnectionDialog.direction && c.discovered && !c.connected);
         if (!city) return null;
-        
+
         return (
           <Dialog open={true} onOpenChange={() => {
             setCityConnectionDialog(null);
@@ -4076,17 +4078,27 @@ export function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile
           }}>
             <DialogContent className="max-w-[400px]">
               <DialogHeader>
-                <DialogTitle>City Discovered!</DialogTitle>
-                <DialogDescription>
-                  Your road has reached the {cityConnectionDialog.direction} border! You&apos;ve discovered {city.name}.
-                </DialogDescription>
+                <T>
+                  <DialogTitle>City Discovered!</DialogTitle>
+                </T>
+                <T>
+                  <DialogDescription>
+                    Your road has reached the <Var>{cityConnectionDialog.direction}</Var> border! You&apos;ve discovered <Var>{city.name}</Var>.
+                  </DialogDescription>
+                </T>
               </DialogHeader>
               <div className="flex flex-col gap-4 mt-4">
                 <div className="text-sm text-muted-foreground">
-                  Connecting to {city.name} will establish a trade route, providing:
+                  <T>
+                    Connecting to <Var>{city.name}</Var> will establish a trade route, providing:
+                  </T>
                   <ul className="list-disc list-inside mt-2 space-y-1">
-                    <li>$5,000 one-time bonus</li>
-                    <li>$200/month additional income</li>
+                    <T>
+                      <li>$5,000 one-time bonus</li>
+                    </T>
+                    <T>
+                      <li>$200/month additional income</li>
+                    </T>
                   </ul>
                 </div>
                 <div className="flex gap-2 justify-end">
@@ -4098,7 +4110,7 @@ export function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile
                       setDragEndTile(null);
                     }}
                   >
-                    Maybe Later
+                    <T>Maybe Later</T>
                   </Button>
                   <Button
                     onClick={() => {
@@ -4108,7 +4120,7 @@ export function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile
                       setDragEndTile(null);
                     }}
                   >
-                    Connect to {city.name}
+                    <T>Connect to <Var>{city.name}</Var></T>
                   </Button>
                 </div>
               </div>
@@ -4131,25 +4143,33 @@ export function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile
         
         return (
           <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-md text-sm ${
-            isWaterfrontPlacementInvalid 
-              ? 'bg-destructive/90 border border-destructive-foreground/30 text-destructive-foreground' 
+            isWaterfrontPlacementInvalid
+              ? 'bg-destructive/90 border border-destructive-foreground/30 text-destructive-foreground'
               : 'bg-card/90 border border-border'
           }`}>
             {isDragging && dragStartTile && dragEndTile && showsDragGrid ? (
               <>
-                {TOOL_INFO[selectedTool].name} - {Math.abs(dragEndTile.x - dragStartTile.x) + 1}x{Math.abs(dragEndTile.y - dragStartTile.y) + 1} area
+                {gt('{name} - {width}x{height} area', {
+                  name: TOOL_INFO[selectedTool].name,
+                  width: Math.abs(dragEndTile.x - dragStartTile.x) + 1,
+                  height: Math.abs(dragEndTile.y - dragStartTile.y) + 1
+                })}
                 {TOOL_INFO[selectedTool].cost > 0 && ` - $${TOOL_INFO[selectedTool].cost * (Math.abs(dragEndTile.x - dragStartTile.x) + 1) * (Math.abs(dragEndTile.y - dragStartTile.y) + 1)}`}
               </>
             ) : isWaterfrontPlacementInvalid ? (
               <>
-                {TOOL_INFO[selectedTool].name} must be placed next to water
+                {gt('{name} must be placed next to water', { name: TOOL_INFO[selectedTool].name })}
               </>
             ) : (
               <>
-                {TOOL_INFO[selectedTool].name} at ({hoveredTile.x}, {hoveredTile.y})
+                {gt('{name} at ({x}, {y})', {
+                  name: TOOL_INFO[selectedTool].name,
+                  x: hoveredTile.x,
+                  y: hoveredTile.y
+                })}
                 {TOOL_INFO[selectedTool].cost > 0 && ` - $${TOOL_INFO[selectedTool].cost}`}
-                {showsDragGrid && ' - Drag to zone area'}
-                {supportsDragPlace && !showsDragGrid && ' - Drag to place'}
+                {showsDragGrid && gt(' - Drag to zone area')}
+                {supportsDragPlace && !showsDragGrid && gt(' - Drag to place')}
               </>
             )}
           </div>
@@ -4183,21 +4203,21 @@ export function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile
                   <SafetyIcon size={14} className="text-blue-400" />
                 )}
                 <span className="text-xs font-semibold text-sidebar-foreground">
-                  {hoveredIncident.type === 'fire' 
+                  {hoveredIncident.type === 'fire'
                     ? getFireNameForTile(hoveredIncident.x, hoveredIncident.y)
-                    : hoveredIncident.crimeType 
+                    : hoveredIncident.crimeType
                       ? getCrimeName(hoveredIncident.crimeType)
-                      : 'Incident'}
+                      : gt('Incident')}
                 </span>
               </div>
               
               {/* Description */}
               <p className="text-[11px] text-muted-foreground leading-tight">
-                {hoveredIncident.type === 'fire' 
+                {hoveredIncident.type === 'fire'
                   ? getFireDescriptionForTile(hoveredIncident.x, hoveredIncident.y)
-                  : hoveredIncident.crimeType 
+                  : hoveredIncident.crimeType
                     ? getCrimeDescription(hoveredIncident.crimeType)
-                    : 'Incident reported.'}
+                    : gt('Incident reported.')}
               </p>
               
               {/* Location */}

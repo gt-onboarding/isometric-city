@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { SpriteTestPanel } from './SpriteTestPanel';
 import { SavedCityMeta } from '@/types/game';
+import { T, Var, useGT } from 'gt-next';
 
 // Format a date for display
 function formatDate(timestamp: number): string {
@@ -40,6 +41,7 @@ function formatMoney(money: number): string {
 }
 
 export function SettingsPanel() {
+  const gt = useGT();
   const { state, setActivePanel, setDisastersEnabled, newGame, loadState, exportState, currentSpritePack, availableSpritePacks, setSpritePack, dayNightMode, setDayNightMode, getSavedCityInfo, restoreSavedCity, clearSavedCity, savedCities, saveCity, loadSavedCity, deleteSavedCity, renameSavedCity } = useGame();
   const { disastersEnabled, cityName, gridSize, id: currentCityId } = state;
   const searchParams = useSearchParams();
@@ -126,27 +128,27 @@ export function SettingsPanel() {
     <Dialog open={true} onOpenChange={() => setActivePanel('none')}>
       <DialogContent className="max-w-[400px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Settings</DialogTitle>
+          <DialogTitle><T>Settings</T></DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-6">
           <div>
-            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-3">Game Settings</div>
-            
+            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-3"><T>Game Settings</T></div>
+
             <div className="flex items-center justify-between py-2 gap-4">
               <div className="flex-1 min-w-0">
-                <Label>Disasters</Label>
-                <p className="text-muted-foreground text-xs">Enable random fires and disasters</p>
+                <Label><T>Disasters</T></Label>
+                <T><p className="text-muted-foreground text-xs">Enable random fires and disasters</p></T>
               </div>
               <Switch
                 checked={disastersEnabled}
                 onCheckedChange={setDisastersEnabled}
               />
             </div>
-            
+
             <div className="py-2">
-              <Label>Sprite Pack</Label>
-              <p className="text-muted-foreground text-xs mb-2">Choose building artwork style</p>
+              <Label><T>Sprite Pack</T></Label>
+              <T><p className="text-muted-foreground text-xs mb-2">Choose building artwork style</p></T>
               <div className="grid grid-cols-1 gap-2">
                 {availableSpritePacks.map((pack) => (
                   <button
@@ -182,20 +184,20 @@ export function SettingsPanel() {
           </div>
           
           <div>
-            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-3">City Information</div>
+            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-3"><T>City Information</T></div>
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between text-muted-foreground">
+              <T><div className="flex justify-between text-muted-foreground">
                 <span>City Name</span>
-                <span className="text-foreground">{cityName}</span>
-              </div>
-              <div className="flex justify-between text-muted-foreground">
+                <span className="text-foreground"><Var>{cityName}</Var></span>
+              </div></T>
+              <T><div className="flex justify-between text-muted-foreground">
                 <span>Grid Size</span>
-                <span className="text-foreground">{gridSize} x {gridSize}</span>
-              </div>
-              <div className="flex justify-between text-muted-foreground">
+                <span className="text-foreground"><Var>{gridSize}</Var> x <Var>{gridSize}</Var></span>
+              </div></T>
+              <T><div className="flex justify-between text-muted-foreground">
                 <span>Auto-Save</span>
                 <span className="text-green-400">Enabled</span>
-              </div>
+              </div></T>
             </div>
           </div>
           
@@ -203,9 +205,9 @@ export function SettingsPanel() {
           
           {/* Saved Cities Section */}
           <div>
-            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-3">Saved Cities</div>
-            <p className="text-muted-foreground text-xs mb-3">Save multiple cities and switch between them</p>
-            
+            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-3"><T>Saved Cities</T></div>
+            <T><p className="text-muted-foreground text-xs mb-3">Save multiple cities and switch between them</p></T>
+
             {/* Save Current City Button */}
             <Button
               variant="default"
@@ -216,7 +218,7 @@ export function SettingsPanel() {
                 setTimeout(() => setSaveCitySuccess(false), 2000);
               }}
             >
-              {saveCitySuccess ? '✓ City Saved!' : `Save "${cityName}"`}
+              {saveCitySuccess ? gt('✓ City Saved!') : gt('Save "{cityName}"', { cityName })}
             </Button>
             
             {/* Saved Cities List */}
@@ -236,7 +238,7 @@ export function SettingsPanel() {
                         <Input
                           value={renameValue}
                           onChange={(e) => setRenameValue(e.target.value)}
-                          placeholder="New city name..."
+                          placeholder={gt('New city name...')}
                           className="h-8 text-sm"
                           autoFocus
                         />
@@ -250,7 +252,7 @@ export function SettingsPanel() {
                               setRenameValue('');
                             }}
                           >
-                            Cancel
+                            <T>Cancel</T>
                           </Button>
                           <Button
                             variant="default"
@@ -264,13 +266,13 @@ export function SettingsPanel() {
                               setRenameValue('');
                             }}
                           >
-                            Save
+                            <T>Save</T>
                           </Button>
                         </div>
                       </div>
                     ) : cityToDelete?.id === city.id ? (
                       <div className="space-y-2">
-                        <p className="text-xs text-muted-foreground text-center">Delete this city?</p>
+                        <T><p className="text-xs text-muted-foreground text-center">Delete this city?</p></T>
                         <div className="flex gap-2">
                           <Button
                             variant="outline"
@@ -278,7 +280,7 @@ export function SettingsPanel() {
                             className="flex-1 h-7 text-xs"
                             onClick={() => setCityToDelete(null)}
                           >
-                            Cancel
+                            <T>Cancel</T>
                           </Button>
                           <Button
                             variant="destructive"
@@ -289,7 +291,7 @@ export function SettingsPanel() {
                               setCityToDelete(null);
                             }}
                           >
-                            Delete
+                            <T>Delete</T>
                           </Button>
                         </div>
                       </div>
@@ -299,17 +301,17 @@ export function SettingsPanel() {
                           <div className="font-medium text-sm truncate flex-1">
                             {city.cityName}
                             {city.id === currentCityId && (
-                              <span className="ml-2 text-[10px] text-primary">(current)</span>
+                              <T><span className="ml-2 text-[10px] text-primary">(current)</span></T>
                             )}
                           </div>
                         </div>
                         <div className="flex items-center gap-3 text-xs text-muted-foreground mb-2">
-                          <span>Pop: {formatPopulation(city.population)}</span>
+                          <span>{gt('Pop: {population}', { population: formatPopulation(city.population) })}</span>
                           <span>{formatMoney(city.money)}</span>
                           <span>{city.gridSize}×{city.gridSize}</span>
                         </div>
                         <div className="text-[10px] text-muted-foreground mb-2">
-                          Saved {formatDate(city.savedAt)}
+                          {gt('Saved {date}', { date: formatDate(city.savedAt) })}
                         </div>
                         <div className="flex gap-2">
                           {city.id !== currentCityId && (
@@ -322,7 +324,7 @@ export function SettingsPanel() {
                                 setActivePanel('none');
                               }}
                             >
-                              Load
+                              <T>Load</T>
                             </Button>
                           )}
                           <Button
@@ -334,7 +336,7 @@ export function SettingsPanel() {
                               setRenameValue(city.cityName);
                             }}
                           >
-                            Rename
+                            <T>Rename</T>
                           </Button>
                           <Button
                             variant="outline"
@@ -342,7 +344,7 @@ export function SettingsPanel() {
                             className="flex-1 h-7 text-xs hover:bg-destructive hover:text-destructive-foreground"
                             onClick={() => setCityToDelete(city)}
                           >
-                            Delete
+                            <T>Delete</T>
                           </Button>
                         </div>
                       </>
@@ -351,12 +353,12 @@ export function SettingsPanel() {
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground text-xs text-center py-3 border border-dashed rounded-md">
+              <T><p className="text-muted-foreground text-xs text-center py-3 border border-dashed rounded-md">
                 No saved cities yet.
-              </p>
+              </p></T>
             )}
           </div>
-          
+
           {/* Restore saved city button - shown if there's a saved city from before viewing a shared city */}
           {savedCityInfo && (
             <div className="space-y-2">
@@ -369,11 +371,11 @@ export function SettingsPanel() {
                   setActivePanel('none');
                 }}
               >
-                Restore {savedCityInfo.cityName}
+                {gt('Restore {cityName}', { cityName: savedCityInfo.cityName })}
               </Button>
-              <p className="text-muted-foreground text-xs text-center">
+              <T><p className="text-muted-foreground text-xs text-center">
                 Your city was saved before viewing a shared city
-              </p>
+              </p></T>
               <Separator />
             </div>
           )}
@@ -384,15 +386,15 @@ export function SettingsPanel() {
               className="w-full"
               onClick={() => setShowNewGameConfirm(true)}
             >
-              Start New Game
+              <T>Start New Game</T>
             </Button>
           ) : (
             <div className="space-y-3">
-              <p className="text-muted-foreground text-sm text-center">Are you sure? This will reset all progress.</p>
+              <T><p className="text-muted-foreground text-sm text-center">Are you sure? This will reset all progress.</p></T>
               <Input
                 value={newCityName}
                 onChange={(e) => setNewCityName(e.target.value)}
-                placeholder="New city name..."
+                placeholder={gt('New city name...')}
               />
               <div className="flex gap-2">
                 <Button
@@ -400,7 +402,7 @@ export function SettingsPanel() {
                   className="flex-1"
                   onClick={() => setShowNewGameConfirm(false)}
                 >
-                  Cancel
+                  <T>Cancel</T>
                 </Button>
                 <Button
                   variant="destructive"
@@ -410,7 +412,7 @@ export function SettingsPanel() {
                     setActivePanel('none');
                   }}
                 >
-                  Reset
+                  <T>Reset</T>
                 </Button>
               </div>
             </div>
@@ -419,23 +421,23 @@ export function SettingsPanel() {
           <Separator />
           
           <div>
-            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-3">Export Game</div>
-            <p className="text-muted-foreground text-xs mb-2">Copy your game state to share or backup</p>
+            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-3"><T>Export Game</T></div>
+            <T><p className="text-muted-foreground text-xs mb-2">Copy your game state to share or backup</p></T>
             <Button
               variant="outline"
               className="w-full"
               onClick={handleCopyExport}
             >
-              {exportCopied ? '✓ Copied!' : 'Copy Game State'}
+              {exportCopied ? gt('✓ Copied!') : gt('Copy Game State')}
             </Button>
           </div>
-          
+
           <div>
-            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-3">Import Game</div>
-            <p className="text-muted-foreground text-xs mb-2">Paste a game state to load it</p>
+            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-3"><T>Import Game</T></div>
+            <T><p className="text-muted-foreground text-xs mb-2">Paste a game state to load it</p></T>
             <textarea
               className="w-full h-20 bg-background border border-border rounded-md p-2 text-xs font-mono resize-none focus:outline-none focus:ring-1 focus:ring-ring"
-              placeholder="Paste game state here..."
+              placeholder={gt('Paste game state here...')}
               value={importValue}
               onChange={(e) => {
                 setImportValue(e.target.value);
@@ -444,10 +446,10 @@ export function SettingsPanel() {
               }}
             />
             {importError && (
-              <p className="text-red-400 text-xs mt-1">Invalid game state. Please check and try again.</p>
+              <T><p className="text-red-400 text-xs mt-1">Invalid game state. Please check and try again.</p></T>
             )}
             {importSuccess && (
-              <p className="text-green-400 text-xs mt-1">Game loaded successfully!</p>
+              <T><p className="text-green-400 text-xs mt-1">Game loaded successfully!</p></T>
             )}
             <Button
               variant="outline"
@@ -455,18 +457,18 @@ export function SettingsPanel() {
               onClick={handleImport}
               disabled={!importValue.trim()}
             >
-              Load Game State
+              <T>Load Game State</T>
             </Button>
           </div>
           
           <div>
-            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-3">Developer Tools</div>
+            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-3"><T>Developer Tools</T></div>
             <Button
               variant="outline"
               className="w-full"
               onClick={() => setShowSpriteTest(true)}
             >
-              Open Sprite Test View
+              <T>Open Sprite Test View</T>
             </Button>
             <Button
               variant="outline"
@@ -477,7 +479,7 @@ export function SettingsPanel() {
                 setActivePanel('none');
               }}
             >
-              Load Example State
+              <T>Load Example State</T>
             </Button>
             <Button
               variant="outline"
@@ -488,7 +490,7 @@ export function SettingsPanel() {
                 setActivePanel('none');
               }}
             >
-              Load Example State 2
+              <T>Load Example State 2</T>
             </Button>
             <Button
               variant="outline"
@@ -499,7 +501,7 @@ export function SettingsPanel() {
                 setActivePanel('none');
               }}
             >
-              Load Example State 3
+              <T>Load Example State 3</T>
             </Button>
             <Button
               variant="outline"
@@ -510,7 +512,7 @@ export function SettingsPanel() {
                 setActivePanel('none');
               }}
             >
-              Load Example State 4
+              <T>Load Example State 4</T>
             </Button>
             <Button
               variant="outline"
@@ -521,7 +523,7 @@ export function SettingsPanel() {
                 setActivePanel('none');
               }}
             >
-              Load Example State 5
+              <T>Load Example State 5</T>
             </Button>
             <Button
               variant="outline"
@@ -532,7 +534,7 @@ export function SettingsPanel() {
                 setActivePanel('none');
               }}
             >
-              Load Example State 6
+              <T>Load Example State 6</T>
             </Button>
             <Button
               variant="outline"
@@ -543,7 +545,7 @@ export function SettingsPanel() {
                 setActivePanel('none');
               }}
             >
-              Load Example State 7
+              <T>Load Example State 7</T>
             </Button>
             <Button
               variant="outline"
@@ -554,7 +556,7 @@ export function SettingsPanel() {
                 setActivePanel('none');
               }}
             >
-              Load Example State 8
+              <T>Load Example State 8</T>
             </Button>
             <Button
               variant="outline"
@@ -565,11 +567,11 @@ export function SettingsPanel() {
                 setActivePanel('none');
               }}
             >
-              Load Example State 9
+              <T>Load Example State 9</T>
             </Button>
             <div className="mt-4 pt-4 border-t border-border">
-              <Label>Day/Night Mode</Label>
-              <p className="text-muted-foreground text-xs mb-2">Override the time-of-day appearance without affecting time progression</p>
+              <Label><T>Day/Night Mode</T></Label>
+              <T><p className="text-muted-foreground text-xs mb-2">Override the time-of-day appearance without affecting time progression</p></T>
               <div className="flex rounded-md border border-border overflow-hidden">
                 {(['auto', 'day', 'night'] as DayNightMode[]).map((mode) => (
                   <button
@@ -581,9 +583,9 @@ export function SettingsPanel() {
                         : 'bg-background hover:bg-muted text-muted-foreground hover:text-foreground'
                     }`}
                   >
-                    {mode === 'auto' && 'Auto'}
-                    {mode === 'day' && 'Day'}
-                    {mode === 'night' && 'Night'}
+                    {mode === 'auto' && gt('Auto')}
+                    {mode === 'day' && gt('Day')}
+                    {mode === 'night' && gt('Night')}
                   </button>
                 ))}
               </div>
