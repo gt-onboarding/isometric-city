@@ -205,7 +205,7 @@ export function MobileTopBar({
 
             {/* Locale Selector */}
             <div className="h-6 flex items-center">
-              <LocaleSelector />
+              <LocaleSelector style={{ backgroundColor: 'transparent' }} />
             </div>
 
             {/* Exit button */}

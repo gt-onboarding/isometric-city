@@ -39,6 +39,7 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
   onSelectTool: (tool: Tool) => void;
   forceOpenUpward?: boolean;
 }) {
+  const m = useMessages();
   const [isOpen, setIsOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0, buttonHeight: 0, openUpward: false });
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -211,9 +212,9 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
                   className={`w-full justify-start gap-2 px-3 py-2 h-auto text-sm transition-all duration-150 ${
                     isSelected ? 'bg-primary text-primary-foreground shadow-sm' : 'hover:bg-muted/60'
                   }`}
-                  title={`${info.description} - Cost: $${info.cost.toLocaleString()}`}
+                  title={`${m(info.description)} - Cost: $${info.cost.toLocaleString()}`}
                 >
-                  <span className="flex-1 text-left truncate">{info.name}</span>
+                  <span className="flex-1 text-left truncate">{m(info.name)}</span>
                   <span className={`text-xs ${isSelected ? 'opacity-80' : 'opacity-50'}`}>${info.cost.toLocaleString()}</span>
                 </Button>
               );
@@ -437,9 +438,9 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
                     className={`w-full justify-start gap-3 px-3 py-2 h-auto text-sm ${
                       isSelected ? 'bg-primary text-primary-foreground' : ''
                     }`}
-                    title={`${info.description}${info.cost > 0 ? ` - Cost: $${info.cost}` : ''}`}
+                    title={`${m(info.description)}${info.cost > 0 ? ` - Cost: $${info.cost}` : ''}`}
                   >
-                    <span className="flex-1 text-left truncate">{info.name}</span>
+                    <span className="flex-1 text-left truncate">{m(info.name)}</span>
                     {info.cost > 0 && (
                       <span className="text-xs opacity-60">${info.cost}</span>
                     )}
